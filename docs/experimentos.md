@@ -7,4 +7,4 @@ en `results/`.
 
 | ID | Fecha | Variante | Hipótesis | Cambio (una familia) | Periodo | Resultado (archivo) | Decisión |
 |---|---|---|---|---|---|---|---|
-| — | — | — | — | — | — | — | — |
+| D0 | 2026-10-09 | Todas (solo análisis) | Prueba técnica: el EA corre sin errores y registra señales | — | USTECm 2024-01→03, OHLC 1 min | `docs/etapa-d/resultados-D0.md` | 0 errores; 1768 señales, todas rechazadas, 61 % por spread/ATR |
