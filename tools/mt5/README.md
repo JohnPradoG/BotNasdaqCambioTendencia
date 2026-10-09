@@ -21,3 +21,14 @@ anteriores en `Common\Files\NBRL` se mueven a `NBRL_antes_<fecha>`, no se borran
 Por qué USTECm: en Exness-MT5Trial11 el historial de USTEC_x100m solo tiene
 2025 y 2026, y 2025 es el periodo OOS reservado. USTECm (el mismo Nasdaq,
 contrato 1) tiene historial desde 2021.
+
+## Etapa E: `ejecutar_etapa_e.bat`
+
+Un backtest por variante en solitario (A1, A2, B1, B2, C1) en **USTECm**, M5,
+in-sample 2021-01-01 → 2024-12-31, modelo "cada tick basado en ticks reales",
+depósito 10 000 USD, presets `presets/NBRL_E_<variante>_USTECm.set`. Guarda
+informe, CSV e `informe.md` por variante en `results/<fecha>_E_IS/<variante>/`.
+Puede tardar horas. El periodo 2025-01 → 2026-06 (OOS) no se toca.
+
+Si el servidor no tiene ticks reales para todo el periodo, MT5 los genera y lo
+indica en el log del agente; eso se revisará antes de sacar conclusiones.
