@@ -82,7 +82,8 @@ R = distancia entrada–SL.
 | `B_RetestMaxBars` | 12 | 6–18 | — | Espera máxima de retesteo (B2). |
 | `B_RetestTolATR` | 0,2 | — | — | Tolerancia del retesteo. |
 | `B_ReentryTolATR` | 0,2 | — | — | Margen que define "vuelta al rango". |
-| `B_ReentryBars` | 3 | — | — | Ventana de invalidación con posición. |
+| `B_ReentryBars` | 3 | — | — | Ventana de invalidación con posición (salida por invalidación, pendiente de implementar). |
+| `B_CooldownBars` | 12 | — | — | Velas sin nueva ruptura en la misma dirección tras una ruptura válida (evita repetir la señal con ventanas de rango desplazadas). |
 
 ## 5. Motor C
 
@@ -121,10 +122,12 @@ horario); el resto empieza en OFF y se prueba uno a uno (SPEC §8).
 |---|---|---|
 | `ServerTimeMode` | MANUAL | AUTO solo en vivo; tester siempre MANUAL. |
 | `ServerUTCOffsetHours` | **pendiente de verificar** (probable 0) | Offset del servidor de Exness respecto a UTC. Se confirma en la cuenta de John antes de la Etapa E. |
+| `ServerDSTMode` | NONE | `NONE` (offset fijo) / `US` (+1 h cuando EE. UU. está en verano, para servidores que cambian de hora). |
 | `SessionMode` | H24_5 | `H24_5` (24/5, por defecto, decisión de John) / `WINDOW`. |
 | `RolloverBlockNY` | 16:50-17:20 | Sin nuevas entradas en el rollover diario (H24_5). |
 | `DailyRolloverPolicy` | KEEP_WITH_SL | Posiciones abiertas en el rollover: mantener con SL / cerrar. |
-| `SundayOpenBlockMin` | 30 | Minutos sin entradas tras la reapertura semanal. |
+| `ReopenBlockMin` | 30 | Minutos sin entradas tras una reapertura del mercado (domingo, festivos, pausas). |
+| `ReopenGapMin` | 45 | Minutos sin ticks que se consideran cierre de mercado (detecta la reapertura sin suponer horarios del broker). |
 | `FridayLastEntryNY` | 15:30 | Última entrada nueva del viernes. |
 | `FridayCloseNY` | 16:30 | Cierre de posiciones del EA el viernes. |
 | `WeekendClosePolicy` | CLOSE_ALL | `CLOSE_ALL` / `KEEP_WITH_SL`. |
@@ -172,7 +175,7 @@ horario); el resto empieza en OFF y se prueba uno a uno (SPEC §8).
 | `X_TrailStruct` | OFF | Trailing por swings M5. |
 | `X_Partial` / `X_PartialR` / `X_PartialFrac` | OFF / 1,0 / 50 | Cierre parcial (si el volumen permite dividir respetando el step). |
 | `X_Invalidation` / `X_InvalidBars` | OFF / 6 | Salida por invalidación. |
-| `X_MaxBars` / `X_MaxBarsM5` | OFF / 24 | Tiempo máximo. |
+| `X_MaxBars` / `X_MaxBarsEntry` | OFF / 24 | Tiempo máximo (velas del TF de entrada). |
 
 ## 10. Seguridad y registros
 

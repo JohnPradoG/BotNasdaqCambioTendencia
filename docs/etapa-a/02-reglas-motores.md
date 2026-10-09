@@ -121,6 +121,10 @@ la candidata a ruptura y no forma parte del rango):
 2. Si ningún `N` cumple, no hay rango activo.
 3. `range_id = B|TF|time(N+1)|time(2)`. Un mismo `range_id` puede producir
    como máximo **una** señal por dirección y variante.
+4. Tras una ruptura válida en una dirección, no se evalúan nuevas rupturas en
+   esa misma dirección durante `B_CooldownBars` (12) velas: la ventana del
+   rango se desplaza con cada vela y, sin esta regla, el mismo movimiento
+   podría volver a generar señal con otro `range_id`.
 
 ### B.1 Confirmación de ruptura (común a B1 y B2), venta = ruptura bajista
 
