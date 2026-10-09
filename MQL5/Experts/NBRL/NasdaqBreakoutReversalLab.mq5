@@ -7,7 +7,7 @@
 //| El motor C (falsas rupturas) se anade en la Etapa C.              |
 //+------------------------------------------------------------------+
 #property copyright "NBRL"
-#property version   "0.10"
+#property version   "1.00"
 #property description "Nasdaq Breakout & Reversal Lab (experimental, sin resultados validados)"
 
 #include <NBRL\Inputs.mqh>

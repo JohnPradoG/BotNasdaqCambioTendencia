@@ -1,9 +1,10 @@
 # Etapa B · Primera versión funcional (v0.1)
 
-> **Estado real: código escrito, NO compilado y NO probado.** Este entorno no
-> tiene MetaTrader 5. La primera compilación la hará John en MetaEditor (o una
-> sesión en su PC); los errores que aparezcan se corrigen en la Etapa D.
-> No existe ningún backtest ni resultado.
+> **Estado real (2026-10-09): compila en el MetaEditor del PC de John con 0
+> errores.** El único aviso (versión `0.10` no válida para el MQL5 Market) se
+> eliminó pasando `#property version` a `1.00`. El EA todavía **no se ha
+> ejecutado** en el Strategy Tester ni en demo, y los autotests no se han
+> ejecutado. No existe ningún backtest ni resultado.
 
 ## Qué está implementado
 

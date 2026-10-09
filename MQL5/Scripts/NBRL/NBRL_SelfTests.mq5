@@ -3,7 +3,7 @@
 //| Autotests sin operar (docs/etapa-a/05-plan-pruebas.md §1.2).      |
 //| Ejecutar en un grafico del simbolo Nasdaq; resultado en Expertos. |
 //+------------------------------------------------------------------+
-#property version "0.10"
+#property version "1.00"
 
 #include <NBRL\SessionManager.mqh>
 #include <NBRL\MarketStructureDetector.mqh>
