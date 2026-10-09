@@ -39,6 +39,6 @@ hubo ticks reales o generados. No uses MT5 hasta que el .bat diga "Listo".
 
 Por defecto la Etapa E corre en modo **diagnóstico** (`MODO=_diag` en el .bat):
 presets `NBRL_E_<variante>_USTECm_diag.set`, con el filtro de spread al 50 % del
-ATR M5 en vez del 10 %, porque en D0 el spread (≈5 puntos, 43 % del ATR M5)
+ATR M5 en vez del 10 % y spread hasta el 30 % de R en vez del 15 %, porque en D0 el spread (≈5 puntos, 43 % del ATR M5)
 rechazó todas las señales. El backtest cobra el spread igual. Para el modo
 estricto, cambia `MODO=` a vacío.

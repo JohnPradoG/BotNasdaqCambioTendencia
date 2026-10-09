@@ -1,4 +1,4 @@
-; NBRL - Etapa E DIAGNOSTICO (filtro de spread al 50 % del ATR M5; el spread se cobra igual), USTECm, variante B2.
+; NBRL - Etapa E DIAGNOSTICO (spread hasta 50 % del ATR M5 y 30 % de R; el spread se cobra igual), USTECm, variante B2.
 InpSymbol=USTECm
 InpTFContext=15
 InpTFEntry=5
@@ -19,3 +19,4 @@ TP_R=1.5
 LogToCommon=true
 ShowPanel=false
 F_MaxSpreadATRFrac=0.5
+F_SpreadRFrac=0.3
