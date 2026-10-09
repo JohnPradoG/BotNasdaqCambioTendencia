@@ -42,3 +42,8 @@ presets `NBRL_E_<variante>_USTECm_diag.set`, con el filtro de spread al 50 % del
 ATR M5 en vez del 10 % y spread hasta el 30 % de R en vez del 15 %, porque en D0 el spread (≈5 puntos, 43 % del ATR M5)
 rechazó todas las señales. El backtest cobra el spread igual. Para el modo
 estricto, cambia `MODO=` a vacío.
+
+Cada variante se prueba dos veces: entradas **M5** (contexto M15) y entradas
+**M15** (contexto H1, presets `*_diag_m15.set`). Resultados en
+`results/<fecha>_E_IS_diag/M5/<variante>/` y `.../M15/<variante>/`. Son 10
+backtests.

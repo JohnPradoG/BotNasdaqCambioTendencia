@@ -1,6 +1,7 @@
 @echo off
 rem NBRL - Etapa E: un backtest por variante en solitario (A1, A2, B1, B2, C1)
 rem en USTECm, in-sample 2021-11-01 a 2024-12-31 (historial de USTECm desde 2021-10-27), cada tick con ticks reales.
+rem Corre cada variante con entradas M5 (contexto M15) y con entradas M15 (contexto H1).
 rem Solo Strategy Tester (cuenta simulada): no opera en la cuenta real.
 rem Uso: cierra MT5 y haz doble clic en este archivo. Puede tardar horas.
 setlocal enabledelayedexpansion
@@ -33,17 +34,19 @@ if errorlevel 1 (
   pause & exit /b 1
 )
 
-for %%V in (A1 A2 B1 B2 C1) do (
-  set "OUT=%OUTROOT%\%%V"
+for %%F in (M5 M15) do for %%V in (A1 A2 B1 B2 C1) do (
+  set "OUT=%OUTROOT%\%%F\%%V"
+  set "SUF=%MODO%"
+  if "%%F"=="M15" set "SUF=%MODO%_m15"
   mkdir "!OUT!" 2>nul
-  echo Backtest %%V ...
-  if exist "%COMMON%\NBRL" move "%COMMON%\NBRL" "%COMMON%\NBRL_antes_%STAMP%_%%V" >nul
-  set "INI=%TEMP%\nbrl_e_%%V.ini"
+  echo Backtest %%F %%V ...
+  if exist "%COMMON%\NBRL" move "%COMMON%\NBRL" "%COMMON%\NBRL_antes_%STAMP%_%%F_%%V" >nul
+  set "INI=%TEMP%\nbrl_e_%%F_%%V.ini"
   > "!INI!" echo [Tester]
   >>"!INI!" echo Expert=NBRL\NasdaqBreakoutReversalLab
-  >>"!INI!" echo ExpertParameters=NBRL_E_%%V_USTECm%MODO%.set
+  >>"!INI!" echo ExpertParameters=NBRL_E_%%V_USTECm!SUF!.set
   >>"!INI!" echo Symbol=USTECm
-  >>"!INI!" echo Period=M5
+  >>"!INI!" echo Period=%%F
   >>"!INI!" echo Model=4
   >>"!INI!" echo Optimization=0
   >>"!INI!" echo FromDate=2021.11.01
@@ -53,12 +56,12 @@ for %%V in (A1 A2 B1 B2 C1) do (
   >>"!INI!" echo Currency=USD
   >>"!INI!" echo Leverage=100
   >>"!INI!" echo Visual=0
-  >>"!INI!" echo Report=NBRL_E_%%V
+  >>"!INI!" echo Report=NBRL_E_%%F_%%V
   >>"!INI!" echo ReplaceReport=1
   >>"!INI!" echo ShutdownTerminal=1
   copy /y "!INI!" "!OUT!\tester.ini" >nul
   start "" /wait "%MT5%\terminal64.exe" /config:"!INI!"
-  copy /y "%DATA%\NBRL_E_%%V.*" "!OUT!\" >nul 2>&1
+  copy /y "%DATA%\NBRL_E_%%F_%%V.*" "!OUT!\" >nul 2>&1
   xcopy /e /i /y "%COMMON%\NBRL" "!OUT!\csv" >nul 2>&1
   for /d %%A in ("%APPDATA%\MetaQuotes\Tester\D0E8209F77C8CF37AD8BF550E51FF075\Agent-*") do xcopy /i /y "%%A\logs\*.log" "!OUT!\tester_logs\%%~nxA\" >nul 2>&1
   xcopy /i /y "%DATA%\MQL5\Logs\*.log" "!OUT!\mql5_logs\" >nul 2>&1
