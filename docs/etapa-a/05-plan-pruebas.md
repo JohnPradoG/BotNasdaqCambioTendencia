@@ -43,9 +43,9 @@ del EA) para que el análisis sea verificable.
 - Una semana con cada motor en solitario, modo "cada tick basado en ticks
   reales": revisar en el gráfico 20 señales al azar y comprobar a mano que
   cumplen las reglas de `02-reglas-motores.md` (lista de chequeo en el CSV).
-- Ninguna posición sin SL; ninguna operación fuera de ventana; ninguna
+- Ninguna posición sin SL; ninguna entrada en rollover, reapertura del domingo o tras el corte del viernes; ninguna
   posición simultánea del magic; ningún `signal_id` repetido en `trades.csv`.
-- Fin de sesión: todas las posiciones cerradas a las 15:55 NY con `CLOSE_ALL`.
+- Fin de semana: todas las posiciones del EA cerradas el viernes a las 16:30 NY con `WeekendClosePolicy=CLOSE_ALL`; en modo `WINDOW`, cerradas a las 15:55 NY.
 - Spread elevado: ejecución con spread fijo alto (p. ej. ×3 del típico): las
   señales deben rechazarse por spread y registrarse.
 - Rechazo de órdenes / desconexión: en demo, desactivar el trading
@@ -66,8 +66,10 @@ superado sin gap/deslizamiento que lo explique).
   servidor de Exness de John para el símbolo (fecha inicial, huecos). Objetivo
   2–3 años.
 - **Partición propuesta (se ajusta a los datos disponibles antes de empezar):**
-  - In-sample (IS): 2023-01-01 → 2025-06-30.
-  - Out-of-sample (OOS) reservado: 2025-07-01 → 2026-06-30. **No se usa en las
+  - John indica que tiene datos desde 2021 en su equipo; falta confirmar que
+    son ticks reales completos.
+  - In-sample (IS): 2021-01-01 → 2024-12-31.
+  - Out-of-sample (OOS) reservado: 2025-01-01 → 2026-06-30. **No se usa en las
     Fases 2–3.**
   - Forward/demo: desde 2026-07-01 y en tiempo real.
 - Modelado: "cada tick basado en ticks reales"; depósito y divisa como la
@@ -106,7 +108,7 @@ superado sin gap/deslizamiento que lo explique).
 - Spread ×1,5 y ×2; deslizamiento adicional equivalente a 1 y 2 veces el spread típico
   (retraso de ejecución del tester o penalización en el análisis del CSV).
 - Parámetros optimizados ±20 %.
-- Desglose por año, mes, día de la semana, franja horaria, régimen (tendencia,
+- Desglose por año, mes, día de la semana, franja horaria, bloque horario (Asia, Europa, NY, post), régimen (tendencia,
   consolidación, alta volatilidad), compras vs ventas.
 - Dependencia de pocas operaciones: resultado quitando el 5 % de mejores
   operaciones y quitando el mejor mes.
@@ -162,7 +164,7 @@ Generado por `PerformanceAnalyzer` (resumen en el diario y CSV) y por
 `tools/analyze_logs.py` (completo) con todas las métricas del SPEC §13:
 operaciones, % aciertos, beneficio y pérdida brutos, neto, PF, expectativa en
 dinero y en R, DD monetario y %, duración media, ganancia/pérdida media, mayor
-racha de pérdidas, por día de la semana, por franja horaria (30 min NY), por
+racha de pérdidas, por día de la semana, por franja horaria (30 min NY) y bloque horario (Asia, Europa, NY, post), por
 régimen, compras vs ventas, MFE/MAE (distribución en R), costes (spread,
 comisión, swap, deslizamiento) e histórico vs forward.
 

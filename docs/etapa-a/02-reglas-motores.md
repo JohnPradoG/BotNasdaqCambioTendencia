@@ -236,7 +236,7 @@ salida base (SL + TP en R + fin de sesión).
 | Código | Mecanismo | Regla | Por defecto |
 |---|---|---|---|
 | `X_TP` | Objetivo en R | `TP_R` ∈ {1,0; 1,5; 2,0} | ON, 1,5 |
-| `X_Session` | Fin de sesión | A las 15:55 NY (`SessionCloseTime`) se cierran las posiciones del EA (`CLOSE_ALL`) o se mantienen con su SL (`KEEP_WITH_SL`) | ON, CLOSE_ALL |
+| `X_Session` | Fin de sesión | Modo 24/5: cierre del viernes 16:30 NY (`WeekendClosePolicy`). Modo `WINDOW`: a las 15:55 NY. `CLOSE_ALL` o `KEEP_WITH_SL` | ON, CLOSE_ALL |
 | `X_BE` | Break-even | Cuando MFE `>= X_BETriggerR (1,0)` R, SL a entrada + costes estimados | OFF |
 | `X_TrailATR` | Trailing ATR | Activo desde MFE `>= X_TrailStartR (1,0)` R; SL = máximo favorable − `X_TrailATRMult (2,0) × ATRe`, solo si mejora el SL | OFF |
 | `X_TrailStruct` | Trailing por estructura | SL al último swing M5 confirmado a favor + buffer, solo si mejora | OFF |

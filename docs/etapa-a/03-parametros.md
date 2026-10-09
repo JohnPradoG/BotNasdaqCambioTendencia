@@ -12,8 +12,8 @@ R = distancia entrada–SL.
 
 | Parámetro | Inicial | Rango de prueba | Optimizar | Descripción |
 |---|---|---|---|---|
-| `InpSymbol` | `""` | — | — | Vacío = símbolo del gráfico. |
-| `InpSymbolKeywords` | `USTEC,NAS100,NAS,NDX,US100,Nasdaq,US Tech` | — | — | Palabras para validar que es Nasdaq 100. |
+| `InpSymbol` | `""` | — | — | Vacío = símbolo del gráfico (en la cuenta de John, `ustec100`). |
+| `InpSymbolKeywords` | `USTEC,NAS100,NAS,NDX,US100,Nasdaq,US Tech` | — | — | Palabras para validar que es Nasdaq 100 (sin distinguir mayúsculas). En la cuenta de John el símbolo es `ustec100` (escritura exacta a confirmar en Market Watch). |
 | `InpAllowUnverifiedSymbol` | false | — | — | Permitir símbolo no reconocido (solo pruebas). |
 | `InpMagic` | 26100901 | — | — | Magic exclusivo de este EA. |
 | `InpTFContext` | M15 | M15 | — | TF de contexto. |
@@ -121,10 +121,18 @@ horario); el resto empieza en OFF y se prueba uno a uno (SPEC §8).
 |---|---|---|
 | `ServerTimeMode` | MANUAL | AUTO solo en vivo; tester siempre MANUAL. |
 | `ServerUTCOffsetHours` | **pendiente de verificar** (probable 0) | Offset del servidor de Exness respecto a UTC. Se confirma en la cuenta de John antes de la Etapa E. |
-| `TradeStartNY` | 09:35 | Inicio de entradas. |
-| `LastEntryNY` | 15:30 | Hora límite de nuevas entradas. |
-| `SessionEndNY` | 15:55 | Fin de ventana. |
-| `SessionClosePolicy` | CLOSE_ALL | `CLOSE_ALL` / `KEEP_WITH_SL`. |
+| `SessionMode` | H24_5 | `H24_5` (24/5, por defecto, decisión de John) / `WINDOW`. |
+| `RolloverBlockNY` | 16:50-17:20 | Sin nuevas entradas en el rollover diario (H24_5). |
+| `DailyRolloverPolicy` | KEEP_WITH_SL | Posiciones abiertas en el rollover: mantener con SL / cerrar. |
+| `SundayOpenBlockMin` | 30 | Minutos sin entradas tras la reapertura semanal. |
+| `FridayLastEntryNY` | 15:30 | Última entrada nueva del viernes. |
+| `FridayCloseNY` | 16:30 | Cierre de posiciones del EA el viernes. |
+| `WeekendClosePolicy` | CLOSE_ALL | `CLOSE_ALL` / `KEEP_WITH_SL`. |
+| `AllowAsia` / `AllowEurope` / `AllowNY` / `AllowPost` | true | Bloques horarios NY (18–03, 03–09:30, 09:30–16, 16–18) para A/B. |
+| `TradeStartNY` | 09:35 | Solo modo `WINDOW`: inicio de entradas. |
+| `LastEntryNY` | 15:30 | Solo modo `WINDOW`: hora límite de nuevas entradas. |
+| `SessionEndNY` | 15:55 | Solo modo `WINDOW`: fin de ventana. |
+| `SessionClosePolicy` | CLOSE_ALL | Solo modo `WINDOW`: `CLOSE_ALL` / `KEEP_WITH_SL`. |
 | `ExcludeWindowsNY` | `""` | Hasta 4 `HH:MM-HH:MM` separadas por `;`. |
 | `EventTimesNY` | `""` | Lista `YYYY.MM.DD HH:MM;...` (FOMC, CPI, etc.) introducida manualmente. |
 | `EventMarginBeforeMin` / `AfterMin` | 15 / 15 | Exclusión alrededor de cada evento. |
@@ -141,7 +149,7 @@ horario); el resto empieza en OFF y se prueba uno a uno (SPEC §8).
 | `DailyLossLimitPct` | 1,0 | % de la referencia diaria. |
 | `DailyLossPolicy` | REALIZED_PLUS_OPEN_RISK | Ver `04-riesgos-limitaciones.md` §4. |
 | `DailyLimitAction` | BLOCK_KEEP_SL | `BLOCK_KEEP_SL` / `BLOCK_CLOSE_ALL`. |
-| `MaxTradesPerDay` | 6 | Operaciones abiertas por día de trading. |
+| `MaxTradesPerDay` | 8 | Operaciones abiertas por día de trading (24/5 amplía las horas disponibles). |
 | `MaxTradesPerEnginePerDay` | 3 | Por motor. |
 | `MaxConsecLosses` | 3 | Pérdidas seguidas que bloquean el día. |
 | `MaxTradesPerSignal` | 1 | Fijo. |
@@ -180,6 +188,7 @@ horario); el resto empieza en OFF y se prueba uno a uno (SPEC §8).
 ## 11. Frecuencia esperada (a comprobar, no es un resultado)
 
 Con estos valores se busca del orden de 0–3 señales operables por día y motor
-en la sesión de Nueva York. Si la Fase 2 muestra < 1 operación por semana en
+en modo 24/5, concentradas previsiblemente en las sesiones europea y de Nueva
+York. Si la Fase 2 muestra < 1 operación por semana en
 un motor, los filtros son demasiado restrictivos (SPEC §1) y se revisará la
 familia de parámetros responsable usando el registro de señales rechazadas.

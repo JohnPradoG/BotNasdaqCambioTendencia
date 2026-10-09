@@ -20,7 +20,9 @@
 | Volumen tick de un CFD ≠ volumen real del mercado | Filtro de volumen poco informativo | Tratarlo como hipótesis (`F_UseTickVol` OFF por defecto). |
 | Contract size / tick value distintos entre cuentas Exness | Lotaje erróneo | Cálculo con `OrderCalcProfit` y especificaciones leídas en tiempo real; prueba unitaria del cálculo. |
 | Comisión no expuesta por la API del símbolo | Coste omitido | Parámetro `CommissionPerLotRT` + lectura de la comisión real de cada deal (`DEAL_COMMISSION`) para el registro. |
-| Ajustes de dividendos/swap en índices | P/L afectado en posiciones nocturnas | Política por defecto `CLOSE_ALL` al fin de sesión; el swap se registra igualmente. |
+| Ajustes de dividendos/swap en índices | P/L afectado en posiciones nocturnas | En 24/5 las posiciones pueden cruzar el rollover diario: se registra el swap de cada deal y se mide su coste por motor. |
+| Operación 24/5 en horas de baja liquidez (Asia, rollover) | Spread relativo alto, movimientos erráticos, más falsas señales | Bloqueo de rollover y de reapertura del domingo; filtros de spread respecto a ATR y a R; métricas por bloque horario; cada bloque desactivable para A/B. |
+| Hueco del fin de semana | Pérdida mayor que el SL | Cierre de posiciones del EA el viernes 16:30 NY por defecto. |
 
 ## 3. Riesgos de lógica de señales
 

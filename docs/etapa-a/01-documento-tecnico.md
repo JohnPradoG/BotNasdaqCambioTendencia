@@ -213,7 +213,7 @@ Aplican a todos los motores:
 
 Para poder medir la contribución de cada mecanismo (SPEC §10), la
 configuración base de todos los motores es: **SL estructural + TP fijo en R
-(1,5R) + cierre por fin de sesión** (este último configurable). Trailing ATR,
+(1,5R) + cierre antes del fin de semana (o fin de ventana en modo `WINDOW`)** (configurable). Trailing ATR,
 trailing estructural, parcial, break-even, invalidación y tiempo máximo existen
 como opciones independientes y desactivadas por defecto; cada una se prueba
 contra la base en un experimento propio.
@@ -233,9 +233,32 @@ contra la base en un experimento propio.
     en tester se usa siempre `MANUAL`. **Hay que verificar el offset real del
     servidor de Exness de John antes de la Etapa E** (ver
     `04-riesgos-limitaciones.md` §2). No se supone que coincida con NY.
-- **Ventana por defecto (configurable):** inicio entradas 09:35 NY, hora límite
-  de nuevas entradas 15:30 NY, fin de ventana 15:55 NY, política de cierre al
-  fin de ventana `CLOSE_ALL` (alternativas: `KEEP_WITH_SL`).
+- **Modo de operación por defecto: 24/5** (decisión de John, 2026-10-09,
+  ver `docs/DECISIONES.md`). `SessionMode`:
+  - `H24_5` (por defecto): se permiten entradas durante todo el horario de
+    negociación del símbolo de domingo a viernes, respetando siempre las
+    sesiones de trading que publica el broker (`SymbolInfoSessionTrade`), más
+    estos bloqueos configurables:
+    - **Rollover diario:** sin nuevas entradas de 16:50 a 17:20 NY (pausa
+      diaria y picos de spread alrededor del cierre del día).
+    - **Reapertura del domingo:** sin entradas durante los primeros 30 min tras
+      la reapertura semanal (huecos y spreads amplios).
+    - **Cierre del viernes:** última entrada nueva el viernes a las 15:30 NY y
+      cierre de las posiciones del EA a las 16:30 NY (`WeekendClosePolicy` =
+      `CLOSE_ALL` por defecto) para no quedar expuesto al hueco del fin de
+      semana.
+    - Posiciones abiertas durante el rollover diario: se mantienen con su SL
+      (`DailyRolloverPolicy` = `KEEP_WITH_SL`); el swap se registra.
+  - `WINDOW`: ventana única configurable (p. ej. 09:35–15:30 NY, cierre 15:55
+    NY), útil para comparar contra el modo 24/5.
+- **Bloques horarios para medir (no filtran por defecto):** cada señal se
+  etiqueta con su bloque horario NY: `ASIA` 18:00–03:00, `EUROPA`
+  03:00–09:30, `NY` 09:30–16:00, `POST` 16:00–18:00. Cada bloque puede
+  activarse o desactivarse (`AllowAsia`, `AllowEurope`, `AllowNY`,
+  `AllowPost`) para pruebas A/B. Hipótesis a comprobar: los umbrales en ATR se
+  adaptan a la menor volatilidad de Asia, pero el spread relativo es mayor,
+  por lo que los filtros de spread respecto a ATR y a R son críticos fuera de
+  la sesión de NY.
 - **Exclusiones:** hasta 4 ventanas diarias fijas `HH:MM-HH:MM` NY y una lista
   de fechas/horas de eventos (`YYYY.MM.DD HH:MM`) con margen antes/después
   configurable. El calendario económico de MQL5 no está disponible en el

@@ -25,3 +25,4 @@ No hay código compilado ni backtests todavía.
 4. [Riesgos y limitaciones](docs/etapa-a/04-riesgos-limitaciones.md): política de riesgo diario, lotaje, ejecución, datos.
 5. [Plan de pruebas](docs/etapa-a/05-plan-pruebas.md): fases 1–6 y criterios de aprobación fijados de antemano.
 6. [Registro de experimentos](docs/experimentos.md).
+7. [Decisiones de John](docs/DECISIONES.md): 24/5, símbolo ustec100, datos desde 2021.
