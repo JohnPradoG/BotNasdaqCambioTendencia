@@ -1,9 +1,9 @@
 # Etapa C · Falsas rupturas, salidas y auditoría (v0.2)
 
-> **Estado real (2026-10-09):** el código de esta etapa está escrito. La
-> compilación en el MetaEditor de John se indica abajo en cuanto se haga. Ni
-> el EA ni los autotests se han ejecutado todavía; no hay backtests ni
-> resultados.
+> **Estado real (2026-10-09):** el commit 88006db compila en el MetaEditor de
+> John con 0 errores y 0 avisos (EA: `Result: 0 errors, 0 warnings`;
+> NBRL_SelfTests: `Result: 0 errors, 0 warnings`). Ni el EA ni los autotests
+> se han ejecutado todavía; no hay backtests ni resultados.
 
 ## Qué se añadió
 
@@ -45,6 +45,6 @@ histórico (in-sample) del forward/out-of-sample.
 
 ## Qué falta
 
-- Compilar esta versión y ejecutar los autotests en MT5 (Etapa D).
+- Ejecutar los autotests en MT5 (Etapa D).
 - Casos límite de la Fase 1 del plan de pruebas (Etapa D).
 - Backtests y comparación A/B (Etapa E).
