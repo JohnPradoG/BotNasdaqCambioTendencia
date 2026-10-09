@@ -68,6 +68,7 @@ private:
       out[k].reasons       = s.comps;
       out[k].rejected      = rejected;
       out[k].reject_reason = why;
+      out[k].inval_level   = 0.0;
      }
 
    //--- puntuacion de agotamiento (A.1); devuelve componentes cumplidos
@@ -239,6 +240,7 @@ private:
             s2.comps += StringFormat("Lmicro=%s;", DoubleToString(m_f.Real(lMicro), msd.digits));
             bool chase = (s.ext - m_f.c[1] > A2_MaxChaseATR * atrC);
             Emit(out, VAR_A2, dir, "A2_MICRO_BREAK", s2, msd, chase, (chase ? "chase" : ""));
+            out[ArraySize(out) - 1].inval_level = m_f.Real(lMicro);
             m_set[idx].fired_a2 = true;
            }
         }

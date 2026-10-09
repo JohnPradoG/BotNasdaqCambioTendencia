@@ -7,7 +7,7 @@
 #define NBRL_TYPES_MQH
 
 #define NBRL_NAME    "NBRL"
-#define NBRL_VERSION "0.1.0"
+#define NBRL_VERSION "0.2.0"
 
 //--- direccion de la operacion
 #define DIR_BUY   1
@@ -112,6 +112,17 @@ struct SZone
   };
 
 //+------------------------------------------------------------------+
+//| Rango de consolidacion vigente (precios reales)                   |
+//+------------------------------------------------------------------+
+struct SRange
+  {
+   bool     ok;
+   double   top;
+   double   bot;
+   datetime time;
+  };
+
+//+------------------------------------------------------------------+
 //| Senal generada por un motor. Inmutable una vez registrada.       |
 //| Los precios estan en precios reales (no en el marco espejo).     |
 //+------------------------------------------------------------------+
@@ -128,6 +139,7 @@ struct SSignal
    double   tp_struct;       // objetivo estructural (0 = usar R fijo)
    double   level;           // nivel clave (H*, techo/suelo del rango)
    double   room_level;      // zona opuesta mas cercana (0 = ninguna)
+   double   inval_level;     // nivel para la salida por invalidacion (0 = ninguno)
    double   atr_ctx;
    double   atr_entry;
    int      regime;

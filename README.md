@@ -9,13 +9,13 @@ cualquier otro documento.
 | Etapa | Contenido | Estado |
 |---|---|---|
 | A | Arquitectura, hipótesis y reglas | Documentada (`docs/etapa-a/`) |
-| B | Motores A y B + riesgo común (MQL5) | Código escrito, sin compilar (`docs/etapa-b/README.md`) |
-| C | Motor C (falsas rupturas) + auditoría | Pendiente |
+| B | Motores A y B + riesgo común (MQL5) | Compila con 0 errores en MT5 (`docs/etapa-b/README.md`) |
+| C | Motor C (falsas rupturas) + auditoría | Código escrito (`docs/etapa-c/README.md`) |
 | D | Compilación, casos límite, correcciones | Pendiente (requiere MT5) |
 | E | Backtest y A/B con datos reales | Pendiente (requiere MT5) |
 | F | Revisión y paso a demo | Pendiente |
 
-No hay código compilado ni backtests todavía. Instrucciones para compilar en `docs/etapa-b/README.md`.
+Todavía no hay backtests ni resultados. Instrucciones para compilar en `docs/etapa-b/README.md`.
 
 ## Documentación de la Etapa A
 

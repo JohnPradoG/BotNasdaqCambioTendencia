@@ -49,8 +49,8 @@
    pulsar *Compilar*. Copiar el resultado completo de la pestaña *Errores*
    (errores y avisos) y pasárnoslo.
 4. Compilar y ejecutar `Scripts/NBRL/NBRL_SelfTests.mq5` sobre un gráfico de
-   `ustec100`; el resultado sale en la pestaña *Expertos*.
-5. Para la primera prueba en el Strategy Tester: símbolo `ustec100`, M5,
+   `USTEC_x100m`; el resultado sale en la pestaña *Expertos*.
+5. Para la primera prueba en el Strategy Tester: símbolo `USTEC_x100m`, M5,
    "cada tick basado en ticks reales", `InpAnalysisOnly=true` y
    `LogToCommon=true`. Los CSV quedan en la carpeta común
    `Terminal/Common/Files/NBRL/`.

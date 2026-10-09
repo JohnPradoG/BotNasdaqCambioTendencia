@@ -232,6 +232,16 @@ institucional": el motor describe y mide un patrón de precio.
 
 ---
 
+### C.4 Etiquetas adicionales de registro y salida por invalidación
+
+- Además de las cuatro etiquetas, el registro distingue `TRUE_BREAK_HELD`
+  (ruptura verdadera que no revirtió dentro de `C_LateWindowBars`),
+  `UNRESOLVED` (hubo un cierre fuera, sin confirmar ni regresar) y
+  `RETURN_UNCLASSIFIED` (regreso fuera de las ventanas). Ninguna opera.
+- **Invalidación de C1 (opcional, `X_Invalidation`):** un cierre de nuevo al
+  otro lado del nivel, más allá de `Lv + C_ReentryDepthATR × ATRe` en una
+  venta, cierra la posición.
+
 ## D · Salidas comunes (PositionManager)
 
 Cada mecanismo tiene su interruptor y se evalúa **por separado** frente a la

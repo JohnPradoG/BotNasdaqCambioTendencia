@@ -224,6 +224,19 @@ public:
       return true;
      }
 
+   bool     ClosePartial(const ulong ticket, const double vol)
+     {
+      last_error = "";
+      if(!PositionSelectByTicket(ticket)) { last_error = "no_position"; return false; }
+      if(m_trade.PositionClosePartial(ticket, vol))
+        {
+         uint rc = m_trade.ResultRetcode();
+         if(rc == TRADE_RETCODE_DONE || rc == TRADE_RETCODE_DONE_PARTIAL || rc == TRADE_RETCODE_PLACED) return true;
+        }
+      last_error = StringFormat("partial retcode=%u %s", m_trade.ResultRetcode(), m_trade.ResultRetcodeDescription());
+      return false;
+     }
+
    bool     Close(const ulong ticket)
      {
       last_error = "";

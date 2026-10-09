@@ -3,10 +3,9 @@
 //| Gestion de la posicion propia: MFE/MAE, salidas configurables y  |
 //| registro del cierre. El SL nunca se aleja.                        |
 //| Salidas: docs/etapa-a/02-reglas-motores.md §D                     |
-//| v0.1: TP en R (en la orden), cierre por sesion, break-even,       |
-//| trailing ATR y tiempo maximo. Trailing por estructura, cierre     |
-//| parcial y salida por invalidacion quedan para una version         |
-//| posterior (desactivados en la configuracion base de todos modos). |
+//| Salida base: SL + TP en R (en la orden) + cierre por sesion.      |
+//| Opcionales e independientes: break-even, trailing ATR, trailing   |
+//| por estructura, cierre parcial, invalidacion y tiempo maximo.     |
 //+------------------------------------------------------------------+
 #ifndef NBRL_POSITION_MQH
 #define NBRL_POSITION_MQH
@@ -46,7 +45,10 @@ struct SPosInfo
    double   mfe;          // excursion favorable maxima (precio)
    double   mae;          // excursion adversa maxima (precio)
    bool     be_done;
+   bool     partial_done;
    int      mods;
+   int      bars;         // velas cerradas desde la entrada
+   double   inval_level;  // nivel de invalidacion de la senal (0 = ninguno)
   };
 
 class CPositionManager
@@ -57,6 +59,7 @@ private:
    long     m_magic;
    string   m_gv;
    string   m_exitReason;    // motivo cuando cierra el propio EA
+   double   m_structLevel;   // ultimo swing a favor desde la entrada (0 = ninguno)
 
    string   Key(const string k) const { return m_gv + "pos" + IntegerToString(m_p.pos_id) + "_" + k; }
 
@@ -89,6 +92,8 @@ public:
 
    bool     Active(void) const { return m_p.active; }
    int      ActiveVariant(void) const { return (m_p.active ? m_p.variant : -1); }
+   int      Dir(void) const { return m_p.dir; }
+   datetime OpenTime(void) const { return m_p.open_time; }
 
    void     OnOpened(const SSignal &s, const ulong ticket, const double reqPrice, const double fill,
                      const double sl, const double tp, const double vol, const double risk,
@@ -121,8 +126,12 @@ public:
       m_p.mfe         = 0.0;
       m_p.mae         = 0.0;
       m_p.be_done     = false;
+      m_p.partial_done= false;
       m_p.mods        = 0;
+      m_p.bars        = 0;
+      m_p.inval_level = s.inval_level;
       m_exitReason    = "";
+      m_structLevel   = 0.0;
       SavePos();
      }
 
@@ -150,7 +159,11 @@ public:
       m_p.regime     = REGIME_MIXED;
       m_p.block      = -1;
       m_p.be_done    = false;
+      m_p.partial_done = true;   // sin datos fiables tras reiniciar: no se repite
       m_p.mods       = 0;
+      m_p.bars       = 0;
+      m_p.inval_level = 0.0;
+      m_structLevel  = 0.0;
       double cur     = PositionGetDouble(POSITION_SL);
       m_p.sl0        = (GlobalVariableCheck(Key("sl0")) ? GlobalVariableGet(Key("sl0")) : cur);
       m_p.r_dist     = (GlobalVariableCheck(Key("r")) ? GlobalVariableGet(Key("r")) : MathAbs(m_p.entry - cur));
@@ -212,6 +225,35 @@ public:
          newSL = (m_p.dir == DIR_BUY ? m_p.entry + cost : m_p.entry - cost);
          m_p.be_done = true;
         }
+      //--- cierre parcial (una vez, respetando volumen minimo y step)
+      if(X_Partial && !m_p.partial_done && m_p.mfe >= X_PartialR * m_p.r_dist)
+        {
+         m_p.partial_done = true;
+         double vol  = PositionGetDouble(POSITION_VOLUME);
+         double step = SymbolInfoDouble(m_sym, SYMBOL_VOLUME_STEP);
+         double vmin = SymbolInfoDouble(m_sym, SYMBOL_VOLUME_MIN);
+         double part = (step > 0.0 ? MathFloor(vol * X_PartialFrac / 100.0 / step + 1e-9) * step : 0.0);
+         if(part >= vmin - 1e-12 && vol - part >= vmin - 1e-12)
+           {
+            if(safety.ClosePartial(m_p.ticket, part))
+               log.Event(now, sess.ServerToNY(now), m_sym, m_magic, "PARTIAL",
+                         StringFormat("%s ticket=%I64u closed=%.2f of %.2f mfe=%.2fR", m_p.sid, m_p.ticket,
+                                      part, vol, m_p.mfe / m_p.r_dist));
+            else
+               log.Event(now, sess.ServerToNY(now), m_sym, m_magic, "ERROR", "partial_failed " + safety.last_error);
+           }
+         else
+            log.Event(now, sess.ServerToNY(now), m_sym, m_magic, "PARTIAL",
+                      StringFormat("%s skipped: volume %.2f cannot be split", m_p.sid, vol));
+        }
+      //--- trailing por estructura: ultimo swing a favor + margen
+      if(X_TrailStruct && m_structLevel > 0.0 && atrE > 0.0)
+        {
+         double spread = ask - bid;
+         double tr = (m_p.dir == DIR_BUY ? m_structLevel - SLBufferATR * atrE
+                                         : m_structLevel + SLBufferATR * atrE + spread);
+         if(newSL == 0.0 || (m_p.dir == DIR_BUY ? tr > newSL : tr < newSL)) newSL = tr;
+        }
       //--- trailing ATR
       if(X_TrailATR && atrE > 0.0 && m_p.mfe >= X_TrailStartR * m_p.r_dist)
         {
@@ -238,6 +280,34 @@ public:
                log.Event(now, sess.ServerToNY(now), m_sym, m_magic, "ERROR", "modify_failed " + safety.last_error);
            }
         }
+     }
+
+   //--- en cada vela cerrada del TF de entrada: invalidacion y nivel estructural
+   void     OnNewBar(CSessionManager &sess, CSafetyController &safety, CTradeLogger &log,
+                     const double close1, const double atrE, const double structLevel)
+     {
+      if(!m_p.active) return;
+      m_p.bars++;
+      m_structLevel = structLevel;
+      if(!X_Invalidation || m_p.r_dist <= 0.0) return;
+      bool inval = false;
+      int v = m_p.variant;
+      double lvl = m_p.inval_level;
+      bool sell = (m_p.dir == DIR_SELL);
+      if(v == VAR_A1)
+         inval = (m_p.bars >= X_InvalidBars && m_p.mfe < 0.5 * m_p.r_dist &&
+                  (sell ? close1 > m_p.entry : close1 < m_p.entry));
+      else if(v == VAR_A2 && lvl > 0.0)
+         inval = (sell ? close1 > lvl + 0.5 * atrE : close1 < lvl - 0.5 * atrE);
+      else if((v == VAR_B1 || v == VAR_B2) && lvl > 0.0 && m_p.bars <= B_ReentryBars)
+         inval = (sell ? close1 > lvl + B_ReentryTolATR * atrE : close1 < lvl - B_ReentryTolATR * atrE);
+      else if(v == VAR_C1 && lvl > 0.0)
+         inval = (sell ? close1 > lvl + C_ReentryDepthATR * atrE : close1 < lvl - C_ReentryDepthATR * atrE);
+      if(!inval) return;
+      datetime now = TimeCurrent();
+      m_exitReason = "invalidation";
+      if(!safety.Close(m_p.ticket))
+         log.Event(now, sess.ServerToNY(now), m_sym, m_magic, "ERROR", "close_failed " + safety.last_error);
      }
 
    //--- la posicion ya no existe: registrar el resultado real del servidor

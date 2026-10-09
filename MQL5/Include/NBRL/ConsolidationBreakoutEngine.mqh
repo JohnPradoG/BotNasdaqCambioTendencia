@@ -61,6 +61,7 @@ private:
       out[k].reasons       = reasons;
       out[k].rejected      = rejected;
       out[k].reject_reason = why;
+      out[k].inval_level   = m_f.Real(levelF);
      }
 
    //--- busca el rango mas largo valido en [2..N+1] (B.0)
@@ -167,6 +168,13 @@ private:
       int N = 0;
       double top = 0.0, bot = 0.0;
       if(!FindRange(msd, N, top, bot)) return;
+      if(dir == DIR_SELL)
+        {
+         range_ok   = true;
+         range_top  = top;
+         range_bot  = bot;
+         range_time = m_f.t[N + 1];
+        }
       double w = top - bot;
       double m = B_ExpectedMoveMult * w;
 
@@ -226,9 +234,14 @@ private:
 
 public:
    string   events[];
+   //--- ultimo rango valido detectado en esta vela (precios reales), para el motor C
+   bool     range_ok;
+   double   range_top, range_bot;
+   datetime range_time;
 
    void     Reset(void)
      {
+      range_ok = false;
       for(int i = 0; i < 2; i++)
         {
          m_p[i].active = false;
@@ -239,6 +252,7 @@ public:
    void     Evaluate(CMarketStructure &msd, SSignal &out[])
      {
       ArrayResize(events, 0);
+      range_ok = false;
       if(!InpEnableB1 && !InpEnableB2) return;
       EvalDir(msd, DIR_SELL, out);
       EvalDir(msd, DIR_BUY, out);

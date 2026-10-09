@@ -2,12 +2,11 @@
 //| NasdaqBreakoutReversalLab.mq5                                     |
 //| EA NASDAQ BREAKOUT & REVERSAL LAB - MT5 / Exness                  |
 //| Especificacion: docs/SPEC.md. Diseno: docs/etapa-a/.              |
-//| v0.1 (Etapa B): motores A (A1/A2) y B (B1/B2), riesgo comun,     |
-//| seguridad de ejecucion, gestion basica de salidas y registros.   |
-//| El motor C (falsas rupturas) se anade en la Etapa C.              |
+//| v0.2 (Etapa C): motores A (A1/A2), B (B1/B2) y C (C1), riesgo    |
+//| comun, seguridad de ejecucion, salidas configurables y registros.|
 //+------------------------------------------------------------------+
 #property copyright "NBRL"
-#property version   "1.00"
+#property version   "1.10"
 #property description "Nasdaq Breakout & Reversal Lab (experimental, sin resultados validados)"
 
 #include <NBRL\Inputs.mqh>
@@ -15,6 +14,7 @@
 #include <NBRL\MarketStructureDetector.mqh>
 #include <NBRL\ReversalAnticipationEngine.mqh>
 #include <NBRL\ConsolidationBreakoutEngine.mqh>
+#include <NBRL\FalseBreakoutEngine.mqh>
 #include <NBRL\SignalQualityFilter.mqh>
 #include <NBRL\RiskManager.mqh>
 #include <NBRL\SafetyController.mqh>
@@ -27,6 +27,7 @@ CSessionManager      g_session;
 CMarketStructure     g_msd;
 CReversalEngine      g_engA;
 CBreakoutEngine      g_engB;
+CFalseBreakoutEngine g_engC;
 CSignalQualityFilter g_filter;
 CRiskManager         g_risk;
 CSafetyController    g_safety;
@@ -264,6 +265,28 @@ void LogEngineEvents(const string &ev[])
    for(int i = 0; i < ArraySize(ev); i++) LogEvent("SETUP", ev[i]);
   }
 
+//--- ultimo swing confirmado a favor desde la entrada (trailing por estructura)
+double StructLevel()
+  {
+   if(!g_pos.Active()) return 0.0;
+   double hi[], lo[];
+   datetime tt[];
+   int n = g_msd.nE;
+   ArrayResize(hi, n);
+   ArrayResize(lo, n);
+   ArrayResize(tt, n);
+   for(int i = 0; i < n; i++) { hi[i] = g_msd.e[i].high; lo[i] = g_msd.e[i].low; tt[i] = g_msd.e[i].time; }
+   SSwing sw[];
+   NBRL_FindSwings(hi, lo, tt, n, SwingStrengthEntry, SwingMinATR * g_msd.atrE1, sw);
+   bool wantLow = (g_pos.Dir() == DIR_BUY);
+   for(int i = ArraySize(sw) - 1; i >= 0; i--)
+     {
+      if(sw[i].time <= g_pos.OpenTime()) break;
+      if(sw[i].is_high != wantLow) return sw[i].price;
+     }
+   return 0.0;
+  }
+
 bool OnNewBar()
   {
    if(!g_msd.Update(g_session)) return false;
@@ -274,6 +297,16 @@ bool OnNewBar()
    LogEngineEvents(g_engA.events);
    g_engB.Evaluate(g_msd, sigs);
    LogEngineEvents(g_engB.events);
+   SRange rng;
+   rng.ok   = g_engB.range_ok;
+   rng.top  = g_engB.range_top;
+   rng.bot  = g_engB.range_bot;
+   rng.time = g_engB.range_time;
+   g_engC.Evaluate(g_msd, rng, sigs);
+   LogEngineEvents(g_engC.events);
+   //--- gestion por vela de la posicion abierta (invalidacion, nivel estructural)
+   if(g_pos.Active())
+      g_pos.OnNewBar(g_session, g_safety, g_log, g_msd.e[1].close, g_msd.atrE1, StructLevel());
    ProcessSignals(sigs);
    return true;
   }
@@ -286,7 +319,7 @@ void UpdatePanel()
    if(now == g_panelTime) return;
    g_panelTime = now;
    string mode = (InpAnalysisOnly ? "SOLO ANALISIS" : (InpBlockNewEntries ? "ENTRADAS BLOQUEADAS" : "ACTIVO"));
-   string eng = (InpEnableA1 ? "A1 " : "") + (InpEnableA2 ? "A2 " : "") + (InpEnableB1 ? "B1 " : "") + (InpEnableB2 ? "B2 " : "");
+   string eng = (InpEnableA1 ? "A1 " : "") + (InpEnableA2 ? "A2 " : "") + (InpEnableB1 ? "B1 " : "") + (InpEnableB2 ? "B2 " : "") + (InpEnableC1 ? "C1 " : "");
    double ref = g_risk.DayRef();
    string txt = StringFormat(
       "%s v%s  %s  magic %I64d  [%s]\n"
@@ -337,6 +370,7 @@ int OnInit()
    g_perf.Reset();
    g_engA.Reset();
    g_engB.Reset();
+   g_engC.Reset();
    ParsePriority();
    ArrayResize(g_seen, 0);
 

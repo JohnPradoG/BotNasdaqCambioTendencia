@@ -21,6 +21,7 @@ input bool            InpEnableA1              = true;      // Activar A1 (giro 
 input bool            InpEnableA2              = true;      // Activar A2 (giro con estructura)
 input bool            InpEnableB1              = true;      // Activar B1 (ruptura directa)
 input bool            InpEnableB2              = true;      // Activar B2 (ruptura con retesteo)
+input bool            InpEnableC1              = true;      // Activar C1 (falsa ruptura)
 input string          InpPriority              = "C1,B2,B1,A2,A1"; // Prioridad si coinciden senales
 input int             InpATRPeriod             = 14;        // Periodo ATR
 
@@ -74,6 +75,18 @@ input int             B_RetestMaxBars          = 12;    // Espera maxima de rete
 input double          B_RetestTolATR           = 0.2;   // Tolerancia de retesteo (ATR M5)
 input double          B_ReentryTolATR          = 0.2;   // Margen de vuelta al rango (ATR M5)
 input int             B_CooldownBars           = 12;    // Velas sin nueva ruptura en la misma direccion
+input int             B_ReentryBars            = 3;     // Ventana de invalidacion con posicion (velas)
+
+input group "=== Motor C: falsas rupturas ==="
+input int             C_MinLevelAgeBars        = 6;     // Antiguedad minima del nivel (velas)
+input double          C_SweepMinATR            = 0.1;   // Sobrepaso minimo (ATR M5)
+input int             C_WindowBars             = 6;     // Ventana de clasificacion (velas)
+input int             C_LateWindowBars         = 12;    // Ventana de extension y reversion (velas)
+input int             C_HoldBars               = 2;     // Cierres que confirman ruptura verdadera
+input double          C_ReentryDepthATR        = 0.1;   // Profundidad del regreso (ATR M5)
+input double          C_BodyRatio              = 0.5;   // Cuerpo minimo de confirmacion
+input double          C_MaxExcursionATR        = 1.5;   // Excursion maxima (ATR M15)
+input ENUM_NBRL_TPMODE C_TPMode                = TPMODE_FIXED_R; // Objetivo (R fijo / medio del rango)
 
 input group "=== Filtros de calidad (opcionales) ==="
 input double          F_MaxSpreadPoints        = 0;     // Spread maximo en puntos (0 = no usar)
@@ -141,6 +154,12 @@ input double          X_BETriggerR             = 1.0;   // MFE para break-even (
 input bool            X_TrailATR               = false; // Trailing ATR
 input double          X_TrailStartR            = 1.0;   // MFE para activar trailing (R)
 input double          X_TrailATRMult           = 2.0;   // Distancia del trailing (ATR M5)
+input bool            X_TrailStruct            = false; // Trailing por estructura (swings M5)
+input bool            X_Partial                = false; // Cierre parcial
+input double          X_PartialR               = 1.0;   // MFE para el cierre parcial (R)
+input double          X_PartialFrac            = 50;    // Porcentaje a cerrar
+input bool            X_Invalidation           = false; // Salida por invalidacion de la senal
+input int             X_InvalidBars            = 6;     // Velas para la invalidacion temporal (A1)
 input bool            X_MaxBars                = false; // Tiempo maximo
 input int             X_MaxBarsEntry           = 24;    // Velas del TF de entrada
 
