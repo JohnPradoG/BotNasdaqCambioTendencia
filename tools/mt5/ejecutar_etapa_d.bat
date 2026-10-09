@@ -34,7 +34,7 @@ start "" /wait "%MT5%\terminal64.exe" /config:"%HERE%selftests.ini"
 powershell -NoProfile -Command "Get-ChildItem '%DATA%\MQL5\Logs\*.log' | Sort-Object LastWriteTime | Select-Object -Last 1 | Get-Content | Select-String 'NBRL_SelfTests|OK   |FAIL |NBRL autotests' | ForEach-Object { $_.Line } | Set-Content '%OUT%\autotests.txt'"
 type "%OUT%\autotests.txt"
 
-echo [4/5] Prueba corta en el Strategy Tester (ene-mar 2024, solo analisis)...
+echo [4/5] Prueba corta en el Strategy Tester (USTECm, ene-mar 2024, solo analisis)...
 if exist "%COMMON%\NBRL" move "%COMMON%\NBRL" "%COMMON%\NBRL_antes_%STAMP%" >nul
 start "" /wait "%MT5%\terminal64.exe" /config:"%HERE%d0_smoke.ini"
 
@@ -43,6 +43,7 @@ copy /y "%DATA%\NBRL_D0_smoke.*" "%OUT%\" >nul 2>&1
 xcopy /e /i /y "%COMMON%\NBRL" "%OUT%\csv" >nul 2>&1
 for /d %%A in ("%APPDATA%\MetaQuotes\Tester\D0E8209F77C8CF37AD8BF550E51FF075\Agent-*") do xcopy /i /y "%%A\logs\*.log" "%OUT%\tester_logs" >nul 2>&1
 xcopy /i /y "%DATA%\logs\*.log" "%OUT%\terminal_logs" >nul 2>&1
+xcopy /i /y "%DATA%\MQL5\Logs\*.log" "%OUT%\mql5_logs" >nul 2>&1
 for /d %%C in ("%OUT%\csv\*") do (
   python "%REPO%\tools\analyze_logs.py" --dir "%%C" --capital 10000 --out "%OUT%\informe.md"
 )

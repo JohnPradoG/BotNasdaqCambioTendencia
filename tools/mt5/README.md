@@ -8,8 +8,8 @@
 3. Abre MT5 con `selftests.ini`: ejecuta `NBRL_SelfTests` en un gráfico de
    USTEC_x100m M5 y MT5 se cierra solo. Las líneas OK/FAIL quedan en
    `autotests.txt`.
-4. Abre MT5 con `d0_smoke.ini`: Strategy Tester, USTEC_x100m M5, OHLC de 1
-   minuto, 2024-01-01 → 2024-03-31, preset `NBRL_todos_solo_analisis.set`
+4. Abre MT5 con `d0_smoke.ini`: Strategy Tester, **USTECm** M5, OHLC de 1
+   minuto, 2024-01-01 → 2024-03-31, preset `NBRL_D0_smoke_USTECm.set`
    (todas las variantes, **solo análisis: no envía órdenes**), depósito 10 000 USD.
 5. Guarda el informe, los logs y los CSV en `results/<fecha>_D0_smoke/` y, si
    hay Python, genera `informe.md` con `tools/analyze_logs.py`.
@@ -17,3 +17,7 @@
 Nada de esto opera en la cuenta: el script de autotests no envía órdenes y el
 Strategy Tester trabaja con una cuenta simulada. Los CSV de ejecuciones
 anteriores en `Common\Files\NBRL` se mueven a `NBRL_antes_<fecha>`, no se borran.
+
+Por qué USTECm: en Exness-MT5Trial11 el historial de USTEC_x100m solo tiene
+2025 y 2026, y 2025 es el periodo OOS reservado. USTECm (el mismo Nasdaq,
+contrato 1) tiene historial desde 2021.
