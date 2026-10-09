@@ -1,10 +1,9 @@
 # Etapa D · Verificación técnica
 
 > **Estado real (2026-10-09):** ejecutado en el PC de John: autotests 50 OK, 0 FAIL;
-> prueba corta sin errores (ver `resultados-D0.md`). Antes: autotests ampliados; el
-> commit c09cccc compila en MT5 con 0 errores y 0 avisos (EA y autotests). Ni los
-> autotests ni el Strategy Tester se han ejecutado todavía: abrir MT5 desde la
-> sesión remota está bloqueado por los permisos del PC de John. No hay resultados.
+> prueba corta sin errores (ver `resultados-D0.md`). El commit
+> c09cccc compila con 0 errores y 0 avisos. Lo lanzó John a mano: abrir MT5
+> desde la sesión remota está bloqueado por los permisos de su PC. Sin backtests.
 
 ## Qué se añadió
 
@@ -26,5 +25,4 @@
 
 ## Qué falta
 
-- Ejecutar el lanzador en el PC de John y revisar autotests, informe y CSV.
 - Pruebas de §1.3 (visual, spread alto, fin de semana, readopción).

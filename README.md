@@ -11,7 +11,7 @@ cualquier otro documento.
 | A | Arquitectura, hipótesis y reglas | Documentada (`docs/etapa-a/`) |
 | B | Motores A y B + riesgo común (MQL5) | Compila con 0 errores en MT5 (`docs/etapa-b/README.md`) |
 | C | Motor C (falsas rupturas) + auditoría | Compila con 0 errores y 0 avisos en MT5 (`docs/etapa-c/README.md`) |
-| D | Compilación, casos límite, correcciones | En curso: autotests ampliados, compilan 0/0; falta ejecutarlos (`docs/etapa-d/README.md`) |
+| D | Compilación, casos límite, correcciones | Autotests 50 OK, 0 FAIL; prueba corta sin errores (`docs/etapa-d/resultados-D0.md`) |
 | E | Backtest y A/B con datos reales | Pendiente (requiere MT5) |
 | F | Revisión y paso a demo | Pendiente |
 
