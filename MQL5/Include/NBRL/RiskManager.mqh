@@ -9,6 +9,7 @@
 #define NBRL_RISK_MQH
 
 #include "Inputs.mqh"
+#include "Logic.mqh"
 
 class CRiskManager
   {
@@ -221,8 +222,7 @@ public:
       if(trades_today >= MaxTradesPerDay) { last_reason = "max_trades_day"; return false; }
       if(trades_engine[EngineIndex(variant)] >= MaxTradesPerEnginePerDay) { last_reason = "max_trades_engine"; return false; }
       if(consec_losses >= MaxConsecLosses) { last_reason = "max_consec_losses"; return false; }
-      double used = MathMax(0.0, -realized) + OpenRisk();
-      if(used + riskNew > DayLimitMoney() + 1e-9) { last_reason = "daily_loss_budget"; return false; }
+      if(!NBRL_DailyBudgetOk(realized, OpenRisk(), riskNew, DayLimitMoney())) { last_reason = "daily_loss_budget"; return false; }
       return true;
      }
 

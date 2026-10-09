@@ -38,7 +38,7 @@ CPerformanceAnalyzer g_perf;
 //--- estado
 string   g_sym;
 datetime g_lastBar = 0;
-string   g_seen[];
+CSeenList g_seen;
 int      g_rank[NBRL_VARIANTS];
 string   g_lastReject = "";
 string   g_lastSignal = "";
@@ -82,20 +82,7 @@ void ParsePriority()
      }
   }
 
-bool Seen(const string id)
-  {
-   for(int i = ArraySize(g_seen) - 1; i >= 0; i--)
-      if(g_seen[i] == id) return true;
-   int n = ArraySize(g_seen);
-   if(n >= 2000)
-     {
-      ArrayRemove(g_seen, 0, 500);
-      n = ArraySize(g_seen);
-     }
-   ArrayResize(g_seen, n + 1);
-   g_seen[n] = id;
-   return false;
-  }
+bool Seen(const string id) { return g_seen.Seen(id); }
 
 //+------------------------------------------------------------------+
 //| Registro de una senal con su estado final                        |
@@ -128,25 +115,10 @@ void LogSignal(const SSignal &s, const string status, const string reason, const
 //+------------------------------------------------------------------+
 bool BuildStops(const SSignal &s, const double entry, const double spread, double &sl, double &tp, string &why)
   {
-   double atrE = s.atr_entry, atrC = s.atr_ctx;
-   if(s.dir == DIR_SELL) sl = s.sl_struct + SLBufferATR * atrE + spread;
-   else                  sl = s.sl_struct - SLBufferATR * atrE;
-   double dist = (s.dir == DIR_SELL ? sl - entry : entry - sl);
-   if(dist <= 0.0) { why = "sl_wrong_side"; return false; }
-   double minD = MathMax(SLMinATR * atrE, g_safety.MinStopDistance() + spread);
-   if(dist < minD)
-     {
-      dist = minD;     // el SL se aleja hasta el minimo; nunca se acerca
-      sl = (s.dir == DIR_SELL ? entry + dist : entry - dist);
-     }
-   if(dist > SLMaxATR * atrC) { why = "sl_too_wide"; return false; }
+   if(!NBRL_CalcSL(s.dir, entry, s.sl_struct, s.atr_entry, s.atr_ctx, spread, g_safety.MinStopDistance(),
+                   SLBufferATR, SLMinATR, SLMaxATR, sl, why)) return false;
    sl = NormalizePrice(g_sym, sl);
-   dist = MathAbs(entry - sl);
-   double reward = 0.0;
-   if(s.tp_struct > 0.0) reward = (s.dir == DIR_SELL ? entry - s.tp_struct : s.tp_struct - entry);
-   if(s.tp_struct > 0.0 && reward >= 1.0 * dist) tp = s.tp_struct;
-   else tp = (s.dir == DIR_SELL ? entry - TP_R * dist : entry + TP_R * dist);
-   tp = NormalizePrice(g_sym, tp);
+   tp = NormalizePrice(g_sym, NBRL_CalcTP(s.dir, entry, sl, s.tp_struct, TP_R));
    return true;
   }
 
@@ -372,7 +344,7 @@ int OnInit()
    g_engB.Reset();
    g_engC.Reset();
    ParsePriority();
-   ArrayResize(g_seen, 0);
+   g_seen.Clear();
 
    datetime now = TimeCurrent();
    LogEvent("INIT", StringFormat("v%s %s server=%s ny=%s utc_offset_mode=%s auto_offset_s=%d session=%s analysis_only=%s",

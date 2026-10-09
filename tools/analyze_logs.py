@@ -248,7 +248,7 @@ def report(trades, signals, capital, split, seed):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dir", required=True, help="carpeta con trades.csv y signals.csv")
-    ap.add_argument("--capital", type=float, required=True, help="capital de referencia para el DD %")
+    ap.add_argument("--capital", type=float, required=True, help="capital de referencia para el DD %%")
     ap.add_argument("--split", help="fecha YYYY-MM-DD que separa histórico y forward")
     ap.add_argument("--out", help="archivo Markdown de salida (por defecto, pantalla)")
     ap.add_argument("--seed", type=int, default=1)

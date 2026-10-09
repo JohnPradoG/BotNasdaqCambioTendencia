@@ -3,10 +3,11 @@
 //| Autotests sin operar (docs/etapa-a/05-plan-pruebas.md §1.2).      |
 //| Ejecutar en un grafico del simbolo Nasdaq; resultado en Expertos. |
 //+------------------------------------------------------------------+
-#property version "1.00"
+#property version "1.10"
 
 #include <NBRL\SessionManager.mqh>
 #include <NBRL\MarketStructureDetector.mqh>
+#include <NBRL\Logic.mqh>
 
 int g_fail = 0, g_ok = 0;
 
@@ -97,11 +98,81 @@ void TestVolume()
    Check(MathAbs(VolFloor(19, 100, 0.1, 0.1, 100) - 0.1) < 1e-9, "T-VOL-4 siempre hacia abajo");
   }
 
+//--- T-SL: SL estructural, minimo y maximo (valores redondos, sin simbolo)
+void TestStops()
+  {
+   double sl = 0.0;
+   string why = "";
+   //--- venta: entrada 100, estructura 100.5, ATR 1, sin colchon ni spread,
+   //--- minimo 1 ATR -> SL alejado a 101 (nunca acercado)
+   bool ok = NBRL_CalcSL(DIR_SELL, 100.0, 100.5, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 3.0, sl, why);
+   Check(ok && MathAbs(sl - 101.0) < 1e-9, "T-SL-1 venta: SL alejado al minimo");
+   ok = NBRL_CalcSL(DIR_BUY, 100.0, 99.5, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 3.0, sl, why);
+   Check(ok && MathAbs(sl - 99.0) < 1e-9, "T-SL-1 compra: SL alejado al minimo");
+   //--- estructura mas lejos que el minimo: se respeta
+   ok = NBRL_CalcSL(DIR_SELL, 100.0, 102.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 3.0, sl, why);
+   Check(ok && MathAbs(sl - 102.0) < 1e-9, "T-SL-1 SL estructural respetado");
+   //--- venta: el spread se suma al SL
+   ok = NBRL_CalcSL(DIR_SELL, 100.0, 102.0, 1.0, 1.0, 0.25, 0.0, 0.0, 1.0, 3.0, sl, why);
+   Check(ok && MathAbs(sl - 102.25) < 1e-9, "T-SL-1 venta: spread incluido");
+   //--- T-SL-2: SL a 5 ATR con maximo 3 -> rechazo
+   why = "";
+   ok = NBRL_CalcSL(DIR_SELL, 100.0, 105.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 3.0, sl, why);
+   Check(!ok && why == "sl_too_wide", "T-SL-2 sl_too_wide");
+   why = "";
+   ok = NBRL_CalcSL(DIR_BUY, 100.0, 101.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 3.0, sl, why);
+   Check(!ok && why == "sl_wrong_side", "T-SL-2 SL del lado equivocado");
+   //--- TP: 1.5R si el estructural no llega a 1R; el estructural si llega
+   Check(MathAbs(NBRL_CalcTP(DIR_SELL, 100.0, 102.0, 99.0, 1.5) - 97.0) < 1e-9, "T-TP 1.5R");
+   Check(MathAbs(NBRL_CalcTP(DIR_SELL, 100.0, 102.0, 97.5, 1.5) - 97.5) < 1e-9, "T-TP estructural");
+   Check(MathAbs(NBRL_CalcTP(DIR_BUY, 100.0, 98.0, 0.0, 1.5) - 103.0) < 1e-9, "T-TP compra sin estructura");
+   //--- T-SL-3: el trailing nunca empeora el SL
+   Check(!NBRL_SLIsBetter(true, 99.0, 98.5, 0.01), "T-SL-3 compra: SL mas bajo descartado");
+   Check(NBRL_SLIsBetter(true, 99.0, 99.5, 0.01), "T-SL-3 compra: SL mas alto aceptado");
+   Check(!NBRL_SLIsBetter(false, 101.0, 101.5, 0.01), "T-SL-3 venta: SL mas alto descartado");
+   Check(NBRL_SLIsBetter(false, 101.0, 100.5, 0.01), "T-SL-3 venta: SL mas bajo aceptado");
+   Check(!NBRL_SLIsBetter(true, 99.0, 99.0, 0.01), "T-SL-3 SL igual descartado");
+  }
+
+//--- T-DAY: presupuesto diario y cambio de dia a las 17:00 NY
+void TestDay()
+  {
+   //--- capital 10000, limite 1 % = 100, riesgo por operacion 0.25 % = 25
+   Check(!NBRL_DailyBudgetOk(-80.0, 0.0, 25.0, 100.0), "T-DAY-1 -0.8% + 0.25% rechazado");
+   Check(NBRL_DailyBudgetOk(-75.0, 0.0, 25.0, 100.0), "T-DAY-1 -0.75% + 0.25% permitido");
+   Check(!NBRL_DailyBudgetOk(-50.0, 50.0, 25.0, 100.0), "T-DAY-1 cuenta el riesgo abierto");
+   Check(NBRL_DailyBudgetOk(200.0, 0.0, 25.0, 100.0), "T-DAY-1 ganancia no amplia el presupuesto");
+   Check(!NBRL_DailyBudgetOk(200.0, 80.0, 25.0, 100.0), "T-DAY-1 ganancia no compensa el riesgo abierto");
+   int start = 17 * 60;
+   datetime a = NBRL_TradingDayKeyNY(U("2024.03.13 16:59"), start);
+   datetime b = NBRL_TradingDayKeyNY(U("2024.03.13 17:00"), start);
+   datetime c = NBRL_TradingDayKeyNY(U("2024.03.14 16:59"), start);
+   Check(a != b, "T-DAY-2 17:00 NY empieza un dia nuevo");
+   Check(b == c, "T-DAY-2 de 17:00 a 16:59 es el mismo dia");
+   Check(b == U("2024.03.14"), "T-DAY-2 el dia lleva la fecha de la sesion siguiente");
+  }
+
+//--- T-ID: la misma senal solo se procesa una vez
+void TestIds()
+  {
+   CSeenList seen;
+   string id1 = "A1_" + HashString("A1|USTECm|5|2024.03.13 10:00|-1|SW123");
+   string id2 = "A1_" + HashString("A1|USTECm|5|2024.03.13 10:05|-1|SW123");
+   Check(!seen.Seen(id1), "T-ID-1 primera vez: nueva");
+   Check(seen.Seen(id1), "T-ID-1 segunda vez: duplicada");
+   Check(!seen.Seen(id2), "T-ID-1 otra vela: nueva");
+   for(int i = 0; i < 2100; i++) seen.Seen("x" + IntegerToString(i));
+   Check(seen.Seen("x2099"), "T-ID-1 lista acotada conserva lo reciente");
+  }
+
 void OnStart()
   {
    TestDST();
    TestSwings();
    TestUtils();
    TestVolume();
+   TestStops();
+   TestDay();
+   TestIds();
    PrintFormat("NBRL autotests: %d OK, %d FAIL", g_ok, g_fail);
   }

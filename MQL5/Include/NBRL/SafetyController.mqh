@@ -10,6 +10,7 @@
 
 #include <Trade\Trade.mqh>
 #include "Inputs.mqh"
+#include "Logic.mqh"
 
 class CSafetyController
   {
@@ -208,12 +209,12 @@ public:
       double minD = MinStopDistance();
       if(type == POSITION_TYPE_BUY)
         {
-         if(cur > 0.0 && newSL <= cur + pt / 2.0) { last_error = "sl_not_better"; return false; }
+         if(!NBRL_SLIsBetter(true, cur, newSL, pt))  { last_error = "sl_not_better"; return false; }
          if(bid - newSL < minD)                   { last_error = "stops_level"; return false; }
         }
       else
         {
-         if(cur > 0.0 && newSL >= cur - pt / 2.0) { last_error = "sl_not_better"; return false; }
+         if(!NBRL_SLIsBetter(false, cur, newSL, pt)) { last_error = "sl_not_better"; return false; }
          if(newSL - ask < minD)                   { last_error = "stops_level"; return false; }
         }
       if(!m_trade.PositionModify(ticket, newSL, tp))

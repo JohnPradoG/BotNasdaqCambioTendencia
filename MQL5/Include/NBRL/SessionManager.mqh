@@ -8,6 +8,7 @@
 #define NBRL_SESSION_MQH
 
 #include "Inputs.mqh"
+#include "Logic.mqh"
 
 //+------------------------------------------------------------------+
 //| Funciones de calendario (UTC)                                    |
@@ -196,8 +197,7 @@ public:
    //--- (con inicio a las 17:00 NY, el lunes empieza el domingo 17:00 NY)
    datetime TradingDayKey(const datetime server) const
      {
-      long shifted = (long)ServerToNY(server) + (long)(24 * 60 - m_dayStart) * 60;
-      return (datetime)(shifted - shifted % 86400);
+      return NBRL_TradingDayKeyNY(ServerToNY(server), m_dayStart);
      }
 
    int      NYMinute(const datetime server) const { return MinuteOfDay(ServerToNY(server)); }
