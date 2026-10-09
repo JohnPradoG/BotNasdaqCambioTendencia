@@ -1,6 +1,7 @@
 # Etapa D · Verificación técnica
 
-> **Estado real (2026-10-09):** autotests ampliados y lanzador preparado. Ni los
+> **Estado real (2026-10-09):** autotests ampliados y lanzador preparado; el
+> commit c09cccc compila en MT5 con 0 errores y 0 avisos (EA y autotests). Ni los
 > autotests ni el Strategy Tester se han ejecutado todavía: abrir MT5 desde la
 > sesión remota está bloqueado por los permisos del PC de John. No hay resultados.
 
