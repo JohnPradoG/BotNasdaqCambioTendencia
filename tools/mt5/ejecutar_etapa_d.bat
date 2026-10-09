@@ -46,7 +46,7 @@ start "" /wait "%MT5%\terminal64.exe" /config:"%HERE%d0_smoke.ini"
 echo [5/5] Guardando informe, logs y CSV en %OUT%
 copy /y "%DATA%\NBRL_D0_smoke.*" "%OUT%\" >nul 2>&1
 xcopy /e /i /y "%COMMON%\NBRL" "%OUT%\csv" >nul 2>&1
-for /d %%A in ("%APPDATA%\MetaQuotes\Tester\D0E8209F77C8CF37AD8BF550E51FF075\Agent-*") do xcopy /i /y "%%A\logs\*.log" "%OUT%\tester_logs" >nul 2>&1
+for /d %%A in ("%APPDATA%\MetaQuotes\Tester\D0E8209F77C8CF37AD8BF550E51FF075\Agent-*") do xcopy /i /y "%%A\logs\*.log" "%OUT%\tester_logs\%%~nxA\" >nul 2>&1
 xcopy /i /y "%DATA%\logs\*.log" "%OUT%\terminal_logs" >nul 2>&1
 xcopy /i /y "%DATA%\MQL5\Logs\*.log" "%OUT%\mql5_logs" >nul 2>&1
 for /d %%C in ("%OUT%\csv\*") do (
