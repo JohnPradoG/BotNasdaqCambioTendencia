@@ -36,3 +36,9 @@ indica en el log del agente; eso se revisará antes de sacar conclusiones.
 Ambos lanzadores se detienen si la compilación no da 0 errores, y copian los
 logs del agente del tester, `MQL5\Logs` y el log del terminal para comprobar si
 hubo ticks reales o generados. No uses MT5 hasta que el .bat diga "Listo".
+
+Por defecto la Etapa E corre en modo **diagnóstico** (`MODO=_diag` en el .bat):
+presets `NBRL_E_<variante>_USTECm_diag.set`, con el filtro de spread al 50 % del
+ATR M5 en vez del 10 %, porque en D0 el spread (≈5 puntos, 43 % del ATR M5)
+rechazó todas las señales. El backtest cobra el spread igual. Para el modo
+estricto, cambia `MODO=` a vacío.
