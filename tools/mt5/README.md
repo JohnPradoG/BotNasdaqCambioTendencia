@@ -25,10 +25,14 @@ contrato 1) tiene historial desde 2021.
 ## Etapa E: `ejecutar_etapa_e.bat`
 
 Un backtest por variante en solitario (A1, A2, B1, B2, C1) en **USTECm**, M5,
-in-sample 2021-01-01 → 2024-12-31, modelo "cada tick basado en ticks reales",
+in-sample **2021-11-01** → 2024-12-31 (el historial de USTECm en el PC empieza el 2021-10-27), modelo "cada tick basado en ticks reales",
 depósito 10 000 USD, presets `presets/NBRL_E_<variante>_USTECm.set`. Guarda
 informe, CSV e `informe.md` por variante en `results/<fecha>_E_IS/<variante>/`.
 Puede tardar horas. El periodo 2025-01 → 2026-06 (OOS) no se toca.
 
 Si el servidor no tiene ticks reales para todo el periodo, MT5 los genera y lo
 indica en el log del agente; eso se revisará antes de sacar conclusiones.
+
+Ambos lanzadores se detienen si la compilación no da 0 errores, y copian los
+logs del agente del tester, `MQL5\Logs` y el log del terminal para comprobar si
+hubo ticks reales o generados. No uses MT5 hasta que el .bat diga "Listo".

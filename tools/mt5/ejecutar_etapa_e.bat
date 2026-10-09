@@ -1,6 +1,6 @@
 @echo off
 rem NBRL - Etapa E: un backtest por variante en solitario (A1, A2, B1, B2, C1)
-rem en USTECm, in-sample 2021-01-01 a 2024-12-31, cada tick con ticks reales.
+rem en USTECm, in-sample 2021-11-01 a 2024-12-31 (historial de USTECm desde 2021-10-27), cada tick con ticks reales.
 rem Solo Strategy Tester (cuenta simulada): no opera en la cuenta real.
 rem Uso: cierra MT5 y haz doble clic en este archivo. Puede tardar horas.
 setlocal enabledelayedexpansion
@@ -25,6 +25,11 @@ xcopy /e /i /y "%REPO%\MQL5\Experts\NBRL" "%DATA%\MQL5\Experts\NBRL" >nul
 mkdir "%DATA%\MQL5\Profiles\Tester" 2>nul
 copy /y "%REPO%\presets\*.set" "%DATA%\MQL5\Profiles\Tester\" >nul
 "%MT5%\metaeditor64.exe" /compile:"%DATA%\MQL5\Experts\NBRL\NasdaqBreakoutReversalLab.mq5" /inc:"%DATA%\MQL5" /log:"%OUTROOT%\compile_ea.log"
+powershell -NoProfile -Command "if (Select-String -Path '%OUTROOT%\compile_ea.log' -Pattern ' 0 errors' -Quiet) { exit 0 } else { exit 1 }"
+if errorlevel 1 (
+  echo La compilacion fallo. Revisa %OUTROOT%\compile_ea.log
+  pause & exit /b 1
+)
 
 for %%V in (A1 A2 B1 B2 C1) do (
   set "OUT=%OUTROOT%\%%V"
@@ -39,7 +44,7 @@ for %%V in (A1 A2 B1 B2 C1) do (
   >>"!INI!" echo Period=M5
   >>"!INI!" echo Model=4
   >>"!INI!" echo Optimization=0
-  >>"!INI!" echo FromDate=2021.01.01
+  >>"!INI!" echo FromDate=2021.11.01
   >>"!INI!" echo ToDate=2024.12.31
   >>"!INI!" echo ForwardMode=0
   >>"!INI!" echo Deposit=10000
@@ -53,7 +58,10 @@ for %%V in (A1 A2 B1 B2 C1) do (
   start "" /wait "%MT5%\terminal64.exe" /config:"!INI!"
   copy /y "%DATA%\NBRL_E_%%V.*" "!OUT!\" >nul 2>&1
   xcopy /e /i /y "%COMMON%\NBRL" "!OUT!\csv" >nul 2>&1
-  for /d %%C in ("!OUT!\csv\*") do python "%REPO%\tools\analyze_logs.py" --dir "%%C" --capital 10000 --out "!OUT!\informe.md"
+  for /d %%A in ("%APPDATA%\MetaQuotes\Tester\D0E8209F77C8CF37AD8BF550E51FF075\Agent-*") do xcopy /i /y "%%A\logs\*.log" "!OUT!\tester_logs\%%~nxA\" >nul 2>&1
+  xcopy /i /y "%DATA%\MQL5\Logs\*.log" "!OUT!\mql5_logs\" >nul 2>&1
+  xcopy /i /y "%DATA%\logs\*.log" "!OUT!\terminal_logs\" >nul 2>&1
+  for /d %%C in ("!OUT!\csv\*") do python "%REPO%\tools\analyze_logs.py" --dir "%%C" --capital 10000 --out "!OUT!\informe_%%~nxC.md"
 )
 
 echo.
