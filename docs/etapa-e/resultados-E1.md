@@ -68,3 +68,10 @@ John subió `NBRL_E_M15_A2.htm`. Coincide con las cifras de la tabla.
 - Máximo de 4 ganadas seguidas y 5 perdidas seguidas. Duración media de posición 6 h 15 min.
 - Con objetivo de 1,5 R, el acierto de equilibrio es 40 %; con 51 operaciones el
   margen de error del 49 % es de unos ±14 puntos, por eso el resultado sigue sin estar probado.
+
+### Desglose de M15 A2 (de `trades.csv`, 1 R = 0,25 % de la cuenta)
+
+- Por año: 2022 21 ops +6,45 R · 2023 17 ops +5,53 R · 2024 13 ops -0,53 R (se apaga).
+- Por sesión: Asia 26 ops +6,49 R · Europa 22 ops +5,45 R · Nueva York 2 ops -2,00 R.
+- Por dirección: compras 21 ops +9,03 R · ventas 30 ops +2,42 R (el Nasdaq subió mucho en 2023-2024).
+- Las 51 cerraron por TP (25) o por SL (26). Sharpe 21,47 del informe: no fiable con tan pocas operaciones.
