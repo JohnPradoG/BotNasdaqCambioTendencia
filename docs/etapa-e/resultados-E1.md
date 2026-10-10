@@ -56,3 +56,15 @@ M15 C1 9585,00 / -0,9135 / 2:32.
 Repetir las 10 pruebas **sin el kill switch** (`MaxTotalDDPct=100`, solo en el
 probador) para que cada variante recorra el periodo completo y tenga más
 operaciones. Se registra como experimento antes de ejecutarlo. No se toca 2025.
+
+## Verificación con el informe del Strategy Tester (M15 A2)
+
+John subió `NBRL_E_M15_A2.htm`. Coincide con las cifras de la tabla.
+
+- Calidad del historial: **0 % ticks reales** (51 221 910 ticks generados, 71 981 barras).
+- 51 operaciones: 25 ganadoras (49,02 %) y 26 perdedoras. Ventas 30 (43,33 % ganadas), compras 21 (57,14 %).
+- Ganancia media 37,89 USD y pérdida media -25,53 USD (≈ 1,5 R y 1 R con riesgo de 25 USD).
+- Neto +283,35 USD, PF 1,43, pago esperado 5,56 USD por operación, DD de saldo 1,60 %, DD de equidad 1,80 %.
+- Máximo de 4 ganadas seguidas y 5 perdidas seguidas. Duración media de posición 6 h 15 min.
+- Con objetivo de 1,5 R, el acierto de equilibrio es 40 %; con 51 operaciones el
+  margen de error del 49 % es de unos ±14 puntos, por eso el resultado sigue sin estar probado.
