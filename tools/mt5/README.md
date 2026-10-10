@@ -47,3 +47,9 @@ Cada variante se prueba dos veces: entradas **M5** (contexto M15) y entradas
 **M15** (contexto H1, presets `*_diag_m15.set`). Resultados en
 `results/<fecha>_E_IS_diag/M5/<variante>/` y `.../M15/<variante>/`. Son 10
 backtests.
+
+Etapa E2: `MODO=_diag_nokill` (valor actual del .bat) usa los presets
+`*_diag_nokill*.set`, iguales a los diagnósticos pero con `MaxTotalDDPct=100`
+solo en el probador, para que cada variante recorra todo el periodo. Resultados
+en `results/<fecha>_E_IS_diag_nokill/`. Resultados de E1 en
+`docs/etapa-e/resultados-E1.md`.

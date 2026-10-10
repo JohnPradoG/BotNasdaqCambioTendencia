@@ -9,8 +9,8 @@ set "MT5=C:\Program Files\MetaTrader 5"
 set "DATA=%APPDATA%\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075"
 set "COMMON=%APPDATA%\MetaQuotes\Terminal\Common\Files"
 set "HERE=%~dp0"
-rem Variante de presets: "_diag" (filtro de spread al 50 %% del ATR) o "" (estricto)
-set "MODO=_diag"
+rem Variante de presets: "_diag" (filtro de spread al 50 %% del ATR), "_diag_nokill" (igual y sin kill switch) o "" (estricto)
+set "MODO=_diag_nokill"
 for %%I in ("%HERE%..\..") do set "REPO=%%~fI"
 for /f %%T in ('powershell -NoProfile -Command "Get-Date -Format yyyy-MM-dd_HHmm"') do set "STAMP=%%T"
 set "OUTROOT=%REPO%\results\%STAMP%_E_IS%MODO%"
