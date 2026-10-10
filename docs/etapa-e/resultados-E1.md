@@ -75,3 +75,15 @@ John subió `NBRL_E_M15_A2.htm`. Coincide con las cifras de la tabla.
 - Por sesión: Asia 26 ops +6,49 R · Europa 22 ops +5,45 R · Nueva York 2 ops -2,00 R.
 - Por dirección: compras 21 ops +9,03 R · ventas 30 ops +2,42 R (el Nasdaq subió mucho en 2023-2024).
 - Las 51 cerraron por TP (25) o por SL (26). Sharpe 21,47 del informe: no fiable con tan pocas operaciones.
+
+## E2 · intento 1 (2026-10-09 22:48): solo terminó la primera prueba
+
+La ventana del `.bat` se cerró entre las 22:49 y las 22:58 y las pruebas siguientes
+no se lanzaron. Sin errores en los logs ni eventos de suspensión. Resultado de la
+primera (M5 A1, sin kill switch, nov-2021 a dic-2024, leído en MT5; el informe no
+se copió a `results`):
+
+- 1052 operaciones, 33,9 % de aciertos, -0,174 R por operación, IC 90 % [-0,237; -0,112].
+- PF 0,74, neto -3693 USD, DD máximo 37,6 %, saldo final 6306,69 USD, 8 min 59 s.
+- M5 A1 pierde de forma clara, no por mala suerte: el IC queda entero por debajo de cero.
+- Las otras 9 pruebas de E2 se repiten. No cerrar la ventana negra hasta que ponga "Listo".
