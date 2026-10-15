@@ -1,0 +1,22 @@
+; NBRL - Etapa E DIAGNOSTICO M15 (entradas M15, contexto H1; spread hasta 50 % ATR y 30 % de R), USTECm, variante B1.
+InpSymbol=USTECm
+InpTFContext=16385
+InpTFEntry=15
+InpAnalysisOnly=false
+InpBlockNewEntries=false
+InpEnableA1=false
+InpEnableA2=false
+InpEnableB1=true
+InpEnableB2=false
+InpEnableC1=false
+ServerTimeMode=0
+ServerUTCOffsetHours=0
+ServerDSTMode=0
+SessionMode=0
+RiskPerTradePct=0.25
+DailyLossLimitPct=1.0
+TP_R=1.5
+LogToCommon=true
+ShowPanel=false
+F_MaxSpreadATRFrac=0.5
+F_SpreadRFrac=0.3
