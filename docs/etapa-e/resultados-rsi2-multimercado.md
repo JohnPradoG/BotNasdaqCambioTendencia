@@ -47,3 +47,18 @@ Calculado por la sesión remota en el PC de John a partir de los M1 exportados d
 (*) S&P y Nasdaq ya se habían mirado antes: sesgados. Sin ellos, los 8 mercados nuevos dan ≈ +0,01 R por operación con swap (314 operaciones): prácticamente cero. Solo Dow (+0,140) y Nikkei (+0,142, swap 0) quedan con IC90 apenas sobre 0. El swap resta 0,03 a 0,05 R por operación (≈ 4 noches de media). No hay Russell 2000 en Exness; IN50m solo tiene 57 días y el oro no salió en la exportación (su ruta no contenía "Metals").
 
 Lectura: la ventaja del RSI-2 diario existe a largo plazo (25 años en Yahoo) pero con los costes de Exness Standard queda muy justa; son solo 5 años y 32 a 49 operaciones por mercado. Sin base para dinero real; sí para una prueba en demo hacia adelante con S&P, Dow, Nikkei y Nasdaq y riesgo pequeño.
+
+## Siete reglas diarias clásicas, 10 índices Exness con spread y swap reales (2021-11 → 2024-12)
+Preregistradas por la sesión remota antes de mirar (sin optimizar parámetros). Criterio fijado antes: conjunto de los 10 índices con IC90 inferior > 0, t > 2,2 (corrección por probar 7) y al menos 6 de 10 positivos; solo las que pasaran se mirarían una vez en 2025-2026. Unidad: ganancia ÷ ATR diario con costes. Cifras no recalculadas aquí; el registro previo no está en el repositorio.
+
+| Estrategia | Ops | Media | IC90 inferior | t | Índices + |
+|---|---|---|---|---|---|
+| RSI-2 solo compras | 220 | +0,145 | +0,016 | 1,85 | 8/10 |
+| 3 días bajistas, compra sobre SMA200 | 243 | +0,091 | +0,005 | 1,74 | 9/10 |
+| RSI-2 compras + ventas | 292 | +0,068 | −0,049 | 0,96 | 7/10 |
+| IBS | 601 | −0,055 | −0,128 | −1,22 | 3/10 |
+| Doble 7 | 279 | −0,099 | −0,261 | −1,00 | 3/10 |
+| Cambio de mes | 290 | −0,118 | −0,266 | −1,31 | 3/10 |
+| Donchian 20/10 | 218 | −0,604 | −0,848 | −4,08 | 1/10 |
+
+Ninguna pasa el listón completo; 2025-2026 no se miró. Solo las dos de comprar retrocesos cortos en tendencia alcista (RSI-2 y 3 días bajistas) son positivas y consistentes, sin llegar a la significación exigida. Más de 70 ideas probadas en total: seguir buscando sobre los mismos datos aumenta el riesgo de un falso hallazgo. Camino: prueba hacia adelante en demo del EA `NBRL_RSI2_Daily` (2-3 meses, riesgo 0,25 %), sin dinero real hasta ver el resultado; la otra palanca es una cuenta con menos spread y swap.
