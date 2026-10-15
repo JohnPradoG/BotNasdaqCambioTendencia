@@ -26,3 +26,24 @@ Solo 2021-2026 (comparable con el Nasdaq): 446 ops, +0,093 R, IC90 [+0,033; +0,1
 
 ## Siguiente paso
 Ver qué símbolos de esos índices ofrece Exness, su swap real y recalcular con esos costes; luego demo hacia adelante.
+
+## Con datos y costes reales de Exness (2021-10 → 2026-10, mismas reglas, solo compras)
+Calculado por la sesión remota en el PC de John a partir de los M1 exportados de la demo (`exportar_m1.bat`, `simbolos.tsv`). Cifras no recalculadas aquí. Spread: mediana de la columna spread de los M1 de los últimos 30 minutos antes del cierre del día NY. Swap largo por noche en posición (triple los miércoles), **supuesto: swap en puntos, coste = swap × point**; no se exportó el modo de swap, así que si Exness lo cobra de otra forma el resultado cambia.
+
+| Símbolo | Ops | R sin swap | R con swap (IC90) | Acierto | Yahoo mismo periodo |
+|---|---|---|---|---|---|
+| US500m* | 45 | +0,328 | +0,280 [+0,141; +0,420] | 84 % | +0,326 |
+| US30m | 49 | +0,188 | +0,140 [+0,002; +0,277] | 73 % | +0,185 |
+| JP225m | 39 | +0,142 | +0,142 [+0,005; +0,279] | 67 % | +0,343 |
+| USTECm* | 39 | +0,177 | +0,127 [−0,011; +0,264] | 69 % | +0,284 |
+| STOXX50m | 40 | +0,068 | +0,040 [−0,106; +0,186] | 70 % | +0,072 |
+| HK50m | 32 | +0,011 | +0,011 [−0,145; +0,166] | 62 % | −0,079 |
+| DE30m | 43 | +0,041 | +0,006 [−0,156; +0,167] | 63 % | +0,114 |
+| FR40m | 37 | −0,010 | −0,036 [−0,204; +0,132] | 62 % | +0,083 |
+| AUS200m | 37 | −0,073 | −0,107 [−0,288; +0,075] | 59 % | +0,035 |
+| UK100m | 37 | −0,119 | −0,165 [−0,329; −0,001] | 51 % | −0,134 |
+| **Total 10** | **398** | **+0,085** | **+0,052 [+0,003; +0,101]** | | |
+
+(*) S&P y Nasdaq ya se habían mirado antes: sesgados. Sin ellos, los 8 mercados nuevos dan ≈ +0,01 R por operación con swap (314 operaciones): prácticamente cero. Solo Dow (+0,140) y Nikkei (+0,142, swap 0) quedan con IC90 apenas sobre 0. El swap resta 0,03 a 0,05 R por operación (≈ 4 noches de media). No hay Russell 2000 en Exness; IN50m solo tiene 57 días y el oro no salió en la exportación (su ruta no contenía "Metals").
+
+Lectura: la ventaja del RSI-2 diario existe a largo plazo (25 años en Yahoo) pero con los costes de Exness Standard queda muy justa; son solo 5 años y 32 a 49 operaciones por mercado. Sin base para dinero real; sí para una prueba en demo hacia adelante con S&P, Dow, Nikkei y Nasdaq y riesgo pequeño.
