@@ -32,3 +32,17 @@ Con 1 punto cumple todo salvo el mínimo de +0,10 R. Las cuentas Raw/Zero cobran
 
 ## Conclusión
 No hay estrategia validada. Lo más cercano es el RSI-2 diario, con evidencia débil (t = 2,18 total, 39 operaciones, contaminado por selección). El impulso con volumen alto tiene ventaja bruta pequeña que solo se acerca a rentable con spread ≤ 1 punto más comisión desconocida.
+
+## 3. Estrategias de más operaciones (divergencias y otras), 2021-11 → 2024-12
+Probadas por la sesión remota en el PC de John, Python sobre M1 de USTECm, spread real por minuto, con control de azar. Las reglas las fijó esa sesión antes de ver resultados; no hay registro escrito previo en el repositorio, así que la garantía de "sin ajuste" descansa en su palabra. Cifras no recalculadas aquí.
+
+| Idea | Ops | Resultado | Lectura |
+|---|---|---|---|
+| Divergencia RSI H1 | 302 (~95/año) | −0,044 R, IC90 [−0,153; +0,065], 40 % acierto; 2022 −0,01, 2023 +0,05, 2024 −0,19; azar −0,015 | No aporta sobre el azar |
+| Divergencia RSI M15 | 841 (~265/año) | −0,112 R, IC90 [−0,174; −0,050]; pierde 3 años; azar −0,089 | Peor que el azar |
+| Momentum intradía (Gao y otros 2018) | 619 | −6,1 puntos/op, IC90 negativo, pierde 3 años | No funciona con este coste |
+| Compras nocturnas 15:55 → 09:35 NY | 627 | +3,1 puntos/op, IC90 [−4,9; +11,2]; 2022 −12,3, 2023 +7,1, 2024 +13,4 | No significativo; swap de 627 noches sin calcular |
+
+Ya van más de 60 combinaciones probadas en total (contando scalping_research, las 10 variantes de MT5 y las ideas de Python), así que cualquier hallazgo nuevo tiene alto riesgo de ser azar.
+
+Siguientes pasos con base: aplicar el RSI-2 diario a más mercados no mirados (S&P 500, Dow, DAX, oro) para sumar operaciones, o repetir el impulso en una cuenta de menor coste.
