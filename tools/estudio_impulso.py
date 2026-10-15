@@ -49,7 +49,7 @@ def to_tf(m1, rule):
 
 def simulate(m1v, t_entry, side, entry, sl, spread):
     """Devuelve R realizado. side=+1 compra, -1 venta. Data en bid."""
-    i0 = m1v["idx"].searchsorted(t_entry)
+    i0 = int(np.searchsorted(m1v["idx"], t_entry.value))
     if i0 >= len(m1v["idx"]) - 1:
         return None
     px = entry + spread if side > 0 else entry
@@ -153,7 +153,7 @@ def main():
     a = ap.parse_args()
     m1 = load_m1(a.m1, a.sep.replace("\\t", "\t") if a.sep else None)
     m15 = to_tf(m1, "15min")
-    m1v = {"idx": m1.index.values, "h": m1.h.values, "l": m1.l.values}
+    m1v = {"idx": m1.index.values.astype("datetime64[ns]").astype("int64"), "h": m1.h.values, "l": m1.l.values}
     lines = ["# Estudio impulso + OB (IS 2021-11 a 2024-12, spread %.1f pts)" % a.spread,
              "", "M1: %d velas, M15: %d velas" % (len(m1), len(m15)), "",
              "| k | vol | modo | n | R sin spread (IC90) | R con spread (IC90) | azar con spread | 2022 | 2023 | 2024 | compras n/R | ventas n/R |",
