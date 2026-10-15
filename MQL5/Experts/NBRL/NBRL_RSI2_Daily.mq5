@@ -26,6 +26,7 @@ input int    InpATRPeriod  = 14;        // Periodo ATR
 input double InpStopATR    = 2.0;       // Stop en multiplos de ATR
 input bool   InpAllowReal  = false;     // Permitir cuenta real (NO activar sin validacion)
 input int    InpSlippagePts = 0;        // Desviacion maxima en puntos (0 = 10 x spread)
+input int    InpEntryWindowMin = 60;    // Solo entrar en los primeros N minutos de la vela diaria
 
 CTrade   g_trade;
 int      g_hSmaL = INVALID_HANDLE, g_hSmaE = INVALID_HANDLE, g_hRsi = INVALID_HANDLE, g_hAtr = INVALID_HANDLE;
@@ -100,26 +101,33 @@ void OnDeinit(const int reason)
 void OnTick()
   {
    datetime bar = iTime(_Symbol, PERIOD_D1, 0);
-   if(bar == 0 || bar == g_lastBar) return;
-   //--- nueva vela diaria: evaluar con la vela cerrada [1]
-   double smaL, smaE, rsi, atr;
-   if(!GetVal(g_hSmaL, 1, smaL) || !GetVal(g_hSmaE, 1, smaE) || !GetVal(g_hRsi, 1, rsi) || !GetVal(g_hAtr, 1, atr)) return;
-   double close1 = iClose(_Symbol, PERIOD_D1, 1);
-   if(close1 <= 0.0 || atr <= 0.0) return;
-   g_lastBar = bar;
-
+   if(bar == 0) return;
    ulong pos = OwnPosition();
+   //--- salida: se reintenta en cada tick mientras la posicion exista y el cierre diario supere la SMA5
    if(pos != 0)
      {
-      if(close1 > smaE)
+      if(!PositionSelectByTicket(pos) || (datetime)PositionGetInteger(POSITION_TIME) >= bar) return;   // abierta hoy: la salida se evalua desde manana
+      double smaE1, close1e = iClose(_Symbol, PERIOD_D1, 1);
+      if(!GetVal(g_hSmaE, 1, smaE1) || close1e <= 0.0) return;
+      if(close1e > smaE1)
         {
          if(g_trade.PositionClose(pos))
-            PrintFormat("RSI2 salida %s: cierre %.2f > SMA%d %.2f", _Symbol, close1, InpSMAExit, smaE);
+            PrintFormat("RSI2 salida %s: cierre %.2f > SMA%d %.2f", _Symbol, close1e, InpSMAExit, smaE1);
          else
             PrintFormat("RSI2 error al cerrar %s: %d %s", _Symbol, g_trade.ResultRetcode(), g_trade.ResultRetcodeDescription());
         }
+      g_lastBar = bar;
       return;
      }
+   //--- entrada: una sola evaluacion por vela diaria
+   if(bar == g_lastBar) return;
+   g_lastBar = bar;
+   if(TimeCurrent() - bar > (datetime)(InpEntryWindowMin * 60))
+     { PrintFormat("RSI2 %s: fuera de la ventana de entrada, vela omitida", _Symbol); return; }
+   double smaL, rsi, atr;
+   if(!GetVal(g_hSmaL, 1, smaL) || !GetVal(g_hRsi, 1, rsi) || !GetVal(g_hAtr, 1, atr)) { g_lastBar = 0; return; }
+   double close1 = iClose(_Symbol, PERIOD_D1, 1);
+   if(close1 <= 0.0 || atr <= 0.0) { g_lastBar = 0; return; }
 
    if(!(close1 > smaL && rsi < InpRSIBuy)) return;
 
