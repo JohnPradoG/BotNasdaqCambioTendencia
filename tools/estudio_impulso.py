@@ -21,8 +21,9 @@ IMP_BODY, IMP_CLOSE, BREAK_LB, VOL_LB, OB_BACK, PEND_BARS = 0.6, 0.2, 10, 50, 6,
 IS_FROM, IS_TO = "2021-11-01", "2024-12-31 23:59"
 
 
-def load_m1(path):
-    df = pd.read_csv(path, sep=None, engine="python")
+def load_m1(path, sep=None):
+    # sep=None autodetecta (lento con millones de filas): pasar --sep "\t" o ";" si se conoce
+    df = pd.read_csv(path, sep=sep) if sep else pd.read_csv(path, sep=None, engine="python")
     df.columns = [c.strip("<> ").lower() for c in df.columns]
     if "date" in df.columns and "time" in df.columns:
         ts = pd.to_datetime(df["date"].astype(str) + " " + df["time"].astype(str))
@@ -148,8 +149,9 @@ def main():
     ap.add_argument("--spread", type=float, default=5.0, help="spread en puntos de indice")
     ap.add_argument("--out", default="")
     ap.add_argument("--seed", type=int, default=7)
+    ap.add_argument("--sep", default="", help="separador del CSV (\\t, ;, ,). Vacio = autodetectar (lento)")
     a = ap.parse_args()
-    m1 = load_m1(a.m1)
+    m1 = load_m1(a.m1, a.sep.replace("\\t", "\t") if a.sep else None)
     m15 = to_tf(m1, "15min")
     m1v = {"idx": m1.index.values, "h": m1.h.values, "l": m1.l.values}
     lines = ["# Estudio impulso + OB (IS 2021-11 a 2024-12, spread %.1f pts)" % a.spread,
@@ -158,6 +160,7 @@ def main():
              "|---|---|---|---|---|---|---|---|---|---|---|---|"]
     rng = np.random.default_rng(a.seed)
     for k, v, mode in itertools.product((1.5, 1.8, 2.2), (0, 70, 80), ("D0", "D1")):
+        print("combinacion k=%.1f vol=%d %s ..." % (k, v, mode), file=sys.stderr, flush=True)
         r = run(m15, m1v, k, v, mode, a.spread)
         if r.empty:
             lines.append("| %.1f | %s | %s | 0 |" % (k, "-" if v == 0 else "P%d" % v, mode))
